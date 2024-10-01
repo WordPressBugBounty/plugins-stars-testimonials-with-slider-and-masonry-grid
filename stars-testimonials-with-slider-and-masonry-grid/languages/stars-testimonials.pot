@@ -617,7 +617,7 @@ msgid "New Category Name"
 msgstr ""
 
 #: plugin.class.php:1020
-msgid "Testomonial Categories"
+msgid "Testimonial Categories"
 msgstr ""
 
 #: plugin.class.php:1043 plugin.class.php:1046

@@ -1035,7 +1035,7 @@ class Stars_Testimonials
 			'update_item'       => __( 'Update Category', 'stars-testimonials' ),
 			'add_new_item'      => __( 'Add New Category', 'stars-testimonials' ),
 			'new_item_name'     => __( 'New Category Name', 'stars-testimonials' ),
-			'menu_name'         => __( 'Testomonial Categories', 'stars-testimonials' ),
+			'menu_name'         => __( 'Testimonial Categories', 'stars-testimonials' ),
 		);
 
 		$args_tax = array(
@@ -1196,7 +1196,7 @@ class Stars_Testimonials
         switch ($type) {
             case 'grid':
                 $row_class = 'grid';
-                $column_class = 'col-1-'.$cols;
+                $column_class = 'col-1-'.esc_attr($cols);
                 break;
             default:
                 # code...
@@ -1205,9 +1205,9 @@ class Stars_Testimonials
 
         $args = array(
             'post_type'   => 'stars_testimonial',
-            'posts_per_page'   => $total,
-            'order'               => $order,
-            'orderby'             => $orderby,
+            'posts_per_page'      => esc_attr($total),
+            'order'               => esc_attr($order),
+            'orderby'             => esc_attr($orderby),
         );
 
         if ($cats != '') {
@@ -1216,7 +1216,7 @@ class Stars_Testimonials
                 array(
                     'taxonomy'         => 'stars_testimonial_cat',
                     'field'            => 'id',
-                    'terms'            => explode(',', $cats),
+                    'terms'            => explode(',', esc_attr($cats)),
                     'include_children' => true,
                     'operator'         => 'IN'
                 ),
@@ -1228,17 +1228,16 @@ class Stars_Testimonials
         $query_testimonials = new WP_Query( $args );
 
         if ( $query_testimonials->have_posts() ) {
-            echo '<div class="stars-testimonials premio-testimonials-'.$type.'" id="st-'.$r_id.'">';
-            $settingString = "";
-            echo '<div class="premio-testimonials-content '.$row_class.'" '.$data_attr.' '.$settingString.'>';
+            echo '<div class="stars-testimonials premio-testimonials-'.$type.'" id="st-'.esc_attr($r_id).'">';
+            echo '<div class="premio-testimonials-content '.esc_attr($row_class).'" '.esc_attr($data_attr).'>';
 
             while ( $query_testimonials->have_posts() ) {
                 $query_testimonials->the_post();
                 $company = get_post_meta( get_the_id(), 'testimonial_company_name', true );
                 $url = get_post_meta( get_the_id(), 'testimonial_company_url', true );
                 $stars = get_post_meta( get_the_id(), 'testimonial_stars', true );
-                echo '<div class="pre-testimonials-content '.$column_class.'">';
-                include 'templates/style'.$style.'.php';
+                echo '<div class="pre-testimonials-content '.esc_attr($column_class).'">';
+                include 'templates/style'.esc_attr($style).'.php';
                 echo '</div>';
             }
 
@@ -1246,30 +1245,30 @@ class Stars_Testimonials
             echo '</div>';
             echo '</div>';
             if($result->font_family != "") {
-                echo '<link href="https://fonts.googleapis.com/css?family='.urlencode($result->font_family).'" rel="stylesheet" tyle="text/css">';
+                echo '<link href="https://fonts.googleapis.com/css?family='.urlencode(esc_attr($result->font_family)).'" rel="stylesheet" tyle="text/css">';
             }
             echo "<style>";
             if($stars_color != "")
-                echo "#st-$r_id .st-rating { color:  #$stars_color; }";
+                echo "#st-".esc_attr($r_id)." .st-rating { color:  #".esc_attr($stars_color)."; }";
             if($text_color != "")
-                echo "#st-$r_id .st-testimonial-content { color:  #$text_color; }";
+                echo "#st-".esc_attr($r_id)." .st-testimonial-content { color:  #".esc_attr($text_color)."; }";
             if($text_color != "")
-                echo "#st-$r_id .st-testimonial-content p { color:  #$text_color; }";
+                echo "#st-".esc_attr($r_id)." .st-testimonial-content p { color:  #".esc_attr($text_color)."; }";
             if($bg_color != "")
-                echo "#st-$r_id .st-testimonial-bg { background-color: #$bg_color; }";
+                echo "#st-".esc_attr($r_id)." .st-testimonial-bg { background-color: #".esc_attr($bg_color)."; }";
             if($bg_color != "")
-                echo "#st-$r_id .style7 { border-bottom-color: #$bg_color; }";
+                echo "#st-".esc_attr($r_id)." .style7 { border-bottom-color: #".esc_attr($bg_color)."; }";
             if($bg_color != "")
-                echo "#st-$r_id .style7::before { background-color: #$bg_color; }";
+                echo "#st-".esc_attr($r_id)." .style7::before { background-color: #".esc_attr($bg_color)."; }";
             if ($bg_color != '') {
-                echo "#st-$r_id .st-style17 .st-testimonial-bg::before { border-color: transparent transparent transparent #$bg_color; }";
+                echo "#st-".esc_attr($r_id)." .st-style17 .st-testimonial-bg::before { border-color: transparent transparent transparent #".esc_attr($bg_color)."; }";
             }
             if($title_color != "")
-                echo "#st-$r_id .st-testimonial-title { color: #$title_color; }";
+                echo "#st-".esc_attr($r_id)." .st-testimonial-title { color: #".esc_attr($title_color)."; }";
             if($company_color != "")
-                echo "#st-$r_id .st-testimonial-company { color: #$company_color; }";
+                echo "#st-".esc_attr($r_id)." .st-testimonial-company { color: #".esc_attr($company_color)."; }";
             if($result->font_family != "") {
-                echo "#st-$r_id figure, #st-$r_id  blockquote{font-family:{$result->font_family}}";
+                echo "#st-".esc_attr($r_id)." figure, #st-".esc_attr($r_id)."  blockquote{font-family:".esc_attr($result->font_family)."}";
             }
             echo "</style>";
             wp_reset_postdata();
@@ -1305,12 +1304,12 @@ class Stars_Testimonials
         switch ($type) {
             case 'grid':
                 $row_class = 'grid';
-                $column_class = 'col-1-'.$cols;
+                $column_class = 'col-1-'.esc_attr($cols);
                 break;
             case 'masonry':
                 wp_enqueue_script( 'wcp-masonry-js', plugin_dir_url( __FILE__ ).'js/masonry.js', array('jquery', 'jquery-masonry') );
                 $row_class = 'grid masonry-wrap';
-                $column_class = 'masonry-item col-1-'.$cols;
+                $column_class = 'masonry-item col-1-'.esc_attr($cols);
                 break;
             case 'slider':
                 wp_enqueue_style( 'slick-css', plugin_dir_url( __FILE__ ).'css/slick.css' );
@@ -1320,7 +1319,7 @@ class Stars_Testimonials
                 $column_class = '';
                 if (is_array($atts)) {
                     foreach ($atts as $p_name => $p_val) {
-                        $data_attr .= ' data-'.$p_name.' = '.$p_val;
+                        $data_attr .= ' data-'.esc_attr($p_name).' = '.esc_attr($p_val);
                     }
                 }
                 break;
@@ -1331,10 +1330,10 @@ class Stars_Testimonials
         }
 
         $args = array(
-            'post_type'   => 'stars_testimonial',
-            'posts_per_page'   => $total,
-            'order'               => $order,
-            'orderby'             => $orderby,
+            'post_type'           => 'stars_testimonial',
+            'posts_per_page'      => esc_attr($total),
+            'order'               => esc_attr($order),
+            'orderby'             => esc_attr($orderby),
         );
 
         if ($cats != '') {
@@ -1343,7 +1342,7 @@ class Stars_Testimonials
                 array(
                     'taxonomy'         => 'stars_testimonial_cat',
                     'field'            => 'id',
-                    'terms'            => explode(',', $cats),
+                    'terms'            => explode(',', esc_attr($cats)),
                     'include_children' => true,
                     'operator'         => 'IN'
                 ),
@@ -1354,19 +1353,19 @@ class Stars_Testimonials
         $query_testimonials = new WP_Query( $args );
 
         if ( $query_testimonials->have_posts() ) {
-            echo '<div class="stars-testimonials premio-testimonials='.$type.'" id="st-'.$r_id.'">';
+            echo '<div class="stars-testimonials premio-testimonials='.esc_attr($type).'" id="st-'.esc_attr($r_id).'">';
             if($type == "slider") {
 
             }
-            echo '<div class="premio-testimonials-content '.$row_class.'" '.$data_attr.'>';
+            echo '<div class="premio-testimonials-content '.esc_attr($row_class).'" '.$data_attr.'>';
 
             while ( $query_testimonials->have_posts() ) {
                 $query_testimonials->the_post();
                 $company = get_post_meta( get_the_id(), 'testimonial_company_name', true );
                 $url = get_post_meta( get_the_id(), 'testimonial_company_url', true );
                 $stars = get_post_meta( get_the_id(), 'testimonial_stars', true );
-                echo '<div class="pre-testimonials-content '.$column_class.'">';
-                include 'templates/style'.$style.'.php';
+                echo '<div class="pre-testimonials-content '.esc_attr($column_class).'">';
+                include 'templates/style'.esc_attr($style).'.php';
                 echo '</div>';
             }
 
@@ -1374,21 +1373,21 @@ class Stars_Testimonials
             echo '</div>';
             echo '</div>';
             echo "<style>";
-            echo "#st-$r_id .st-rating { color:  $stars_color; }";
-            echo "#st-$r_id .st-testimonial-content { color:  $text_color; }";
-            echo "#st-$r_id .st-testimonial-content p { color:  $text_color; }";
-            echo "#st-$r_id .st-testimonial-bg { background-color: $bg_color; }";
-            echo "#st-$r_id .style1 .arrow { border-top-color: $bg_color; }";
-            echo "#st-$r_id .style3 .arrow { border-top-color: $bg_color; }";
-            echo "#st-$r_id .style10 .arrow { border-top-color: $bg_color; }";
-            echo "#st-$r_id .style7 { border-bottom-color: $bg_color; }";
-            echo "#st-$r_id .style7::before { background-color: $bg_color; }";
+            echo "#st-".esc_attr($r_id)." .st-rating { color:  ".esc_attr($stars_color)."; }";
+            echo "#st-".esc_attr($r_id)." .st-testimonial-content { color:  ".esc_attr($text_color)."; }";
+            echo "#st-".esc_attr($r_id)." .st-testimonial-content p { color:  ".esc_attr($text_color)."; }";
+            echo "#st-".esc_attr($r_id)." .st-testimonial-bg { background-color: ".esc_attr($bg_color)."; }";
+            echo "#st-".esc_attr($r_id)." .style1 .arrow { border-top-color: ".esc_attr($bg_color)."; }";
+            echo "#st-".esc_attr($r_id)." .style3 .arrow { border-top-color: ".esc_attr($bg_color)."; }";
+            echo "#st-".esc_attr($r_id)." .style10 .arrow { border-top-color: ".esc_attr($bg_color)."; }";
+            echo "#st-".esc_attr($r_id)." .style7 { border-bottom-color: ".esc_attr($bg_color)."; }";
+            echo "#st-".esc_attr($r_id)." .style7::before { background-color: ".esc_attr($bg_color)."; }";
             if ($bg_color != '') {
-                echo "#st-$r_id .st-style17 .st-testimonial-bg::before { border-color: transparent transparent transparent $bg_color; }";
+                echo "#st-".esc_attr($r_id)." .st-style17 .st-testimonial-bg::before { border-color: transparent transparent transparent ".esc_attr($bg_color)."; }";
             }
-            echo "#st-$r_id .st-testimonial-title { color: $title_color; }";
-            echo "#st-$r_id .slick-prev:before, #st-$r_id .slick-next:before { color: $arrows_color; }";
-            echo "#st-$r_id .st-testimonial-company { color: $company_color; }";
+            echo "#st-".esc_attr($r_id)." .st-testimonial-title { color: ".esc_attr($title_color)."; }";
+            echo "#st-".esc_attr($r_id)." .slick-prev:before, #st-".esc_attr($r_id)." .slick-next:before { color: ".esc_attr($arrows_color)."; }";
+            echo "#st-".esc_attr($r_id)." .st-testimonial-company { color: ".esc_attr($company_color)."; }";
             echo "</style>";
             wp_reset_postdata();
         }
