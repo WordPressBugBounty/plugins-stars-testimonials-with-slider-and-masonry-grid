@@ -1224,6 +1224,10 @@ class Stars_Testimonials
         }
         $r_id = rand();
 
+        if(!is_numeric($style)) {
+            $style = 1;
+        }
+
         ob_start();
         $query_testimonials = new WP_Query( $args );
 
@@ -1237,7 +1241,7 @@ class Stars_Testimonials
                 $url = get_post_meta( get_the_id(), 'testimonial_company_url', true );
                 $stars = get_post_meta( get_the_id(), 'testimonial_stars', true );
                 echo '<div class="pre-testimonials-content '.esc_attr($column_class).'">';
-                include 'templates/style'.esc_attr($style).'.php';
+                include 'templates/style'.sanitize_file_name($style).'.php';
                 echo '</div>';
             }
 
@@ -1300,6 +1304,10 @@ class Stars_Testimonials
         $row_class = '';
         $column_class = '';
         $data_attr = '';
+
+        if(!is_numeric($style)) {
+            $style = 1;
+        }
 
         switch ($type) {
             case 'grid':
@@ -1365,7 +1373,7 @@ class Stars_Testimonials
                 $url = get_post_meta( get_the_id(), 'testimonial_company_url', true );
                 $stars = get_post_meta( get_the_id(), 'testimonial_stars', true );
                 echo '<div class="pre-testimonials-content '.esc_attr($column_class).'">';
-                include 'templates/style'.esc_attr($style).'.php';
+                include 'templates/style'.sanitize_file_name($style).'.php';
                 echo '</div>';
             }
 

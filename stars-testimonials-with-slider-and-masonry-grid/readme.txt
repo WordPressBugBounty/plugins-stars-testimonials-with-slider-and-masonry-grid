@@ -2,8 +2,8 @@
 Contributors: galdub, tomeraharon, premio
 Tags: testimonials, reviews, customers reviews, collect reviews, collect testimonials
 Requires at least: 3.5
-Tested up to: 6.6
-Stable tag: 3.3.2
+Tested up to: 6.7
+Stable tag: 3.3.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Plugin URI: https://premio.io/downloads/stars-testimonials/
@@ -176,6 +176,9 @@ Just follow our <a href="https://premio.io/wordpress-premio-pro-version-installa
 4. More awesome templates are available with the Pro version
 
 == Changelog ==
+
+= 3.3.3 =
+Authentication bug fixed (reported by Peter Thaleikis 🙏)
 
 = 3.3.2 =
 JavaScript bug fixed

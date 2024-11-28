@@ -34,7 +34,7 @@
                                             <div class="plan-price"><?php esc_html_e('$25', 'stars-testimonials'); ?><span><?php esc_html_e('/year', 'stars-testimonials'); ?></span></div>
                                         </div>
                                         <div class="plan-center">
-                                            <div class="price-permonth">Less than <b>$2.5</b>/mo · <b>Billed Annually</b></div>
+                                            <div class="price-permonth">Less than <b>$2.5</b>/mo <span class="full-width-bold">Billed Yearly</span></div>
                                             <!--div class="price-websites">For small website owners</div-->
                                             <div class="price-offer"><?php esc_html_e('Renewals for 25% off', 'stars-testimonials'); ?></div>
                                         </div>
@@ -76,7 +76,7 @@
                                             <div class="plan-price"><?php esc_html_e('$59', 'stars-testimonials'); ?><span><?php esc_html_e('/year', 'stars-testimonials'); ?></span></div>
                                         </div>
                                         <div class="plan-center">
-                                            <div class="price-permonth">Less than <b>$5</b>/mo · <b>Billed Annually</b></div>
+                                            <div class="price-permonth">Less than <b>$5</b>/mo <span class="full-width-bold">Billed Yearly</span></div>
                                             <div class="price-offer"><?php esc_html_e('Renewals for 25% off', 'stars-testimonials'); ?></div>
                                         </div>
                                     </div>
@@ -117,7 +117,7 @@
                                             <div class="plan-price"><?php esc_html_e('$99', 'stars-testimonials'); ?><span><?php esc_html_e('/year', 'stars-testimonials'); ?></span></div>
                                         </div>
                                         <div class="plan-center">
-                                            <div class="price-permonth">Less than <b>$8.5</b>/mo · <b>Billed Annually</b></div>
+                                            <div class="price-permonth">Less than <b>$8.5</b>/mo <span class="full-width-bold">Billed Yearly</span></div>
                                             <!--div class="price-websites">For agencies who manage clients</div-->
                                             <div class="price-offer"><?php esc_html_e('Renewals for 25% off', 'stars-testimonials'); ?></div>
                                         </div>
@@ -295,15 +295,15 @@
                 thisOption = $(this).find("option:selected").attr("data-option");
                 if(thisOption == "1_year") {
                     thisPrice = thisPrice+"<span>/year</span>";
-                    per_month = "Less than <b>$" + thisperMonth + "</b>/mo · <b>Billed Annually</b>";
+                    per_month = "Less than <b>$" + thisperMonth + "</b>/mo <span class='full-width-bold'>Billed Yearly</span>";
                     priceText = "Renewals for <b>25% off</b>";
                 } else if(thisOption == "2_year") {
                     thisPrice = thisPrice+"<span>/2 years</span>";
-                    per_month = "Less than <b>$" + thisperMonth + "</b>/mo · <b>Billed Annually</b>";
+                    per_month = "Less than <b>$" + thisperMonth + "</b>/mo <span class='full-width-bold'>Billed Yearly after 2 Years</span>";
                     priceText = "Renewals for <b>25% off</b>";
                 } else {
                     thisPrice = thisPrice+"<span>/lifetime</span>";
-                    per_month = "<b>Best value</b>";
+                    per_month = "<span class='full-width-bold'>Best value</span>";
                     priceText = "For lifetime";
                 }
                 $(this).closest(".price-table").find("a.cart-link").attr("href", thisValue);

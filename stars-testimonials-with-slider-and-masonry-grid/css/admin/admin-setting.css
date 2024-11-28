@@ -690,6 +690,10 @@ a, a:focus, a:hover {
 .website-package .select2-container .select2-selection--single .select2-selection__rendered{
     font-weight: bold;
 }
+.full-width-bold {
+    display: block;
+    font-weight: bold;
+}
 @media (max-width: 1320px) {
     .plan-price {
         font-size: 50px;
