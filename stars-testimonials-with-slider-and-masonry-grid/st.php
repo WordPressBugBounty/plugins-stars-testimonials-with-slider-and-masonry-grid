@@ -6,7 +6,7 @@ Description: Responsive and customizable testimonial & reviews widgets
 Plugin URI: https://premio.io/downloads/stars-testimonials/
 Author: Premio
 Author URI: https://premio.io/downloads/stars-testimonials/
-Version: 3.3.3
+Version: 3.3.4
 License: GPLv3
 Text Domain: stars-testimonials
 Domain Path: languages
@@ -20,7 +20,7 @@ define("DB_TESTIMONIAL_TABLE_NAME","star_testimonial_settings");
 define('WCP_TESTIMONIAL__FILE__', __FILE__ );
 define('TESTIMONIAL_PLUGIN_BASE', plugin_basename( WCP_TESTIMONIAL__FILE__ ) );
 define('TESTIMONIAL_PLUGIN_URL', plugins_url('/', __FILE__) );
-define('PREMIO_TESTIMONIAL_PLUGIN_VERSION', '3.3.3');
+define('PREMIO_TESTIMONIAL_PLUGIN_VERSION', '3.3.4');
 
 require 'plugin.class.php';
 if (class_exists('Stars_Testimonials')) {

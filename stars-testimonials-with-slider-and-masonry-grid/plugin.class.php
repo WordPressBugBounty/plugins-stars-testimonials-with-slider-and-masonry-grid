@@ -1241,7 +1241,7 @@ class Stars_Testimonials
                 $url = get_post_meta( get_the_id(), 'testimonial_company_url', true );
                 $stars = get_post_meta( get_the_id(), 'testimonial_stars', true );
                 echo '<div class="pre-testimonials-content '.esc_attr($column_class).'">';
-                include 'templates/style'.sanitize_file_name($style).'.php';
+                include 'templates/style'.$style.'.php';
                 echo '</div>';
             }
 
@@ -1306,7 +1306,7 @@ class Stars_Testimonials
         $data_attr = '';
 
         if(!is_numeric($style)) {
-            $style = 1;
+            $style = "1";
         }
 
         switch ($type) {
