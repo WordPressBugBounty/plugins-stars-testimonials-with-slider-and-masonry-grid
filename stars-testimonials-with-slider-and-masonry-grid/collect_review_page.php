@@ -1,40 +1,40 @@
 <?php if (!defined('ABSPATH')) { exit; } ?>
 <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins" />
 <div class="star-testimonials-new-widget-wrap">
-    <h2 class="text-center"><?php esc_html_e("Collect testimonials from your website’s visitors 🚀",'stars-testimonials') ?></h2>
+    <h2 class="text-center"><?php esc_html_e("Collect testimonials from your website’s visitors 🚀",'stars-testimonials-with-slider-and-masonry-grid') ?></h2>
     <div class="star-testimonials-new-widget-row">
         <div class="star-testimonials-features">
             <ul>
                 <li>
                     <div class="star-testimonials-feature">
                         <div class="star-testimonials-feature-top">
-                            <img src="<?php echo TESTIMONIAL_PLUGIN_URL ?>/images/hand-holding-heart-solid.png" />
+                            <img src="<?php echo esc_url(TESTIMONIAL_PLUGIN_URL) ?>/images/hand-holding-heart-solid.png" />
                         </div>                        
-                        <div class="feature-description"><strong><?php esc_html_e("Collect testimonials with ease by showing a button under your testimonials,",'stars-testimonials') ?></strong> <?php esc_html_e("your visitors will be able to submit testimonials",'stars-testimonials') ?></div>
+                        <div class="feature-description"><strong><?php esc_html_e("Collect testimonials with ease by showing a button under your testimonials,",'stars-testimonials-with-slider-and-masonry-grid') ?></strong> <?php esc_html_e("your visitors will be able to submit testimonials",'stars-testimonials-with-slider-and-masonry-grid') ?></div>
                     </div>
                 </li>
                 <li>
                     <div class="star-testimonials-feature">
                         <div class="star-testimonials-feature-top">
-                            <img src="<?php echo TESTIMONIAL_PLUGIN_URL ?>/images/thumbs-up-solid.png" />
+                            <img src="<?php echo esc_url(TESTIMONIAL_PLUGIN_URL) ?>/images/thumbs-up-solid.png" />
                         </div>
                         <div class="feature-title"></div>
-                        <div class="feature-description"><strong><?php esc_html_e("Control which testimonials are shown and which aren’t.",'stars-testimonials') ?></strong><?php esc_html_e("The testimonials will be added your website only after you approve the testimonials.",'stars-testimonials') ?> 
+                        <div class="feature-description"><strong><?php esc_html_e("Control which testimonials are shown and which aren’t.",'stars-testimonials-with-slider-and-masonry-grid') ?></strong><?php esc_html_e("The testimonials will be added your website only after you approve the testimonials.",'stars-testimonials-with-slider-and-masonry-grid') ?> 
 </div>
                     </div>
                 </li>
                 <li>
                     <div class="star-testimonials-feature">
                         <div class="star-testimonials-feature-top">
-                            <img src="<?php echo TESTIMONIAL_PLUGIN_URL ?>/images/external-link-alt-solid.png" />
+                            <img src="<?php echo esc_url(TESTIMONIAL_PLUGIN_URL) ?>/images/external-link-alt-solid.png" />
                         </div>
-                        <div class="feature-description"><strong><?php esc_html_e("Create a direct link for testimonials submission.",'stars-testimonials') ?></strong><?php esc_html_e("Use our direct link and send it to your clients so they can submit their testimonial",'stars-testimonials') ?> </div>
+                        <div class="feature-description"><strong><?php esc_html_e("Create a direct link for testimonials submission.",'stars-testimonials-with-slider-and-masonry-grid') ?></strong><?php esc_html_e("Use our direct link and send it to your clients so they can submit their testimonial",'stars-testimonials-with-slider-and-masonry-grid') ?> </div>
                     </div>
                 </li>                
             </ul>
             <div class="clear clearfix"></div>
         </div>
-        <a href="<?php echo admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=upgrade-to-pro"); ?>" class="new-upgrade-button"><?php esc_html_e("Upgrade to Pro",'stars-testimonials') ?></a>
+        <a href="<?php echo esc_url( admin_url('edit.php?post_type=stars_testimonial&page=all-shortcodes&task=upgrade-to-pro') ); ?>" class="new-upgrade-button"><?php esc_html_e('Upgrade to Pro','stars-testimonials-with-slider-and-masonry-grid') ?></a>
     </div>
 </div>
 <style>
@@ -46,7 +46,7 @@
     background-size: auto 100%;
     width: 100%;
     max-width: 776px;
-    background: #fff url("<?php echo TESTIMONIAL_PLUGIN_URL.'/images/bg.png';?>") right bottom no-repeat;
+    background: #fff url("<?php echo esc_url(TESTIMONIAL_PLUGIN_URL.'/images/bg.png');?>") right bottom no-repeat;
     font-family: 'Poppins';
     line-height: 20px;
 }

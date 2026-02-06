@@ -3,9 +3,9 @@
 	<?php the_post_thumbnail( 'full' ); ?>
   <div class="figcaption st-testimonial-bg">
     <h3 class="st-testimonial-title"><?php the_title(); ?></h3>
-    <h5 class="st-testimonial-company"><?php echo $company; ?></h5>
+    <h5 class="st-testimonial-company"><?php echo esc_html( $company ); ?></h5>
     <div class="blockquote st-testimonial-content">
       <?php the_content(); ?>
     </div>
-  </div><?php echo ($url != '') ? '<a href="'.$company.'"></a>' : '' ; ?>
+  </div><?php echo ! empty( $url ) ? '<a href="' . esc_url( $url ) . '"></a>' : '' ; ?>
 </div>

@@ -18,11 +18,11 @@
 <table class="widefat testimonial-setting" border="0">
 	<tr>
 		<th width="180px">Company name and role</th>
-		<td><input type="text" placeholder="Company Inc." class="widefat" name="testimonial_company_name" value="<?php echo $company; ?>"></td>
+		<td><input type="text" placeholder="Company Inc." class="widefat" name="testimonial_company_name" value="<?php echo esc_attr($company); ?>"></td>
 	</tr>
 	<tr>
 		<th>Website link (optional)</th>
-		<td><input type="text" class="widefat" placeholder="https://www.example.com" name="testimonial_company_url" value="<?php echo $url; ?>"></td>
+		<td><input type="text" class="widefat" placeholder="https://www.example.com" name="testimonial_company_url" value="<?php echo esc_url($url); ?>"></td>
 	</tr>
 	<tr>
 		<th>Stars rating</th>

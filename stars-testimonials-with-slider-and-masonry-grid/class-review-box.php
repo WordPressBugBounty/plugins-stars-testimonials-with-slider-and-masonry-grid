@@ -1,15 +1,13 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * Review Class
  *
  * @author  : Premio <contact@premio.io>
  * @license : GPL2
  * */
-
-if (defined('ABSPATH') === false) {
-	exit;
-}
-
+ 
 class Star_testimonials_form_review_box
 {
 
@@ -82,9 +80,11 @@ class Star_testimonials_form_review_box
 
 //	    $this->reviewStatus = true;
 		if($this->reviewStatus) {
+            
 			add_action('admin_enqueue_scripts', [$this, 'enqueue_scripts']);
 			add_action('admin_notices', [$this, 'admin_notices']);
 		}
+        
 		add_action("wp_ajax_".$this->pluginSlug."_review_box", [$this, "form_review_box"]);
 		add_action("wp_ajax_".$this->pluginSlug."_review_box_message", [$this, "form_review_box_message"]);
 
@@ -107,56 +107,60 @@ class Star_testimonials_form_review_box
 	 */
 	public function form_review_box_message()
 	{
-		if (current_user_can('manage_options')) {
-			$nonce = filter_input(INPUT_POST, 'nonce');
-
-			if (!empty($nonce) && wp_verify_nonce($nonce, $this->pluginSlug."_review_box_message")) {
-				add_option($this->pluginSlug."_hide_review_box", "1");
-				$rating  = filter_input(INPUT_POST, 'rating');
-				$message = filter_input(INPUT_POST, 'message');
-
-				global $current_user;
-				$postMessage = [];
-
-				$domain    = site_url();
-				$user_name = $current_user->first_name." ".$current_user->last_name;
-				$email     = $current_user->user_email;
-
-				$messageData          = [];
-				$messageData['key']   = "email";
-				$messageData['value'] = $email;
-				$postMessage[]        = $messageData;
-
-				$messageData          = [];
-				$messageData['key']   = "stars";
-				$messageData['value'] = $rating;
-				$postMessage[]        = $messageData;
-
-				$messageData          = [];
-				$messageData['key']   = "message";
-				$messageData['value'] = $message;
-				$postMessage[]        = $messageData;
-
-				$apiParams = [
-					'title'   => 'Review for '.$this->pluginName.' WordPress',
-					'domain'  => $domain,
-					'email'   => "contact@premio.io",
-					'url'     => site_url(),
-					'name'    => $user_name,
-					'message' => $postMessage,
-					'plugin'  => $this->pluginName,
-					'type'    => "Review",
-				];
-
-				// Sending message to Crisp API
-				$apiResponse = wp_safe_remote_post("https://premioapps.com/premio/send-feedback-api.php", ['body' => $apiParams, 'timeout' => 15, 'sslverify' => true]);
-
-				if (is_wp_error($apiResponse)) {
-					wp_safe_remote_post("https://premioapps.com/premio/send-feedback-api.php", ['body' => $apiParams, 'timeout' => 15, 'sslverify' => false]);
-				}
-			}
-			die;
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error();
 		}
+
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, $this->pluginSlug . '_review_box_message' ) ) {
+			wp_send_json_error();
+		}
+
+		add_option( $this->pluginSlug . '_hide_review_box', '1' );
+		$rating  = isset( $_POST['rating'] ) ? intval( wp_unslash( $_POST['rating'] ) ) : 0;
+		$message = isset( $_POST['message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) : '';
+
+		global $current_user;
+		$postMessage = [];
+
+		$domain    = site_url();
+		$user_name = $current_user->first_name." ".$current_user->last_name;
+		$email     = $current_user->user_email;
+
+		$messageData          = [];
+		$messageData['key']   = 'email';
+		$messageData['value'] = $email;
+		$postMessage[]        = $messageData;
+
+		$messageData          = [];
+		$messageData['key']   = 'stars';
+		$messageData['value'] = $rating;
+		$postMessage[]        = $messageData;
+
+		$messageData          = [];
+		$messageData['key']   = 'message';
+		$messageData['value'] = $message;
+		$postMessage[]        = $messageData;
+
+		$apiParams = [
+			'title'   => 'Review for ' . $this->pluginName . ' WordPress',
+			'domain'  => $domain,
+			'email'   => 'contact@premio.io',
+			'url'     => site_url(),
+			'name'    => $user_name,
+			'message' => $postMessage,
+			'plugin'  => $this->pluginName,
+			'type'    => 'Review',
+		];
+
+		// Sending message to Crisp API
+		$apiResponse = wp_safe_remote_post( 'https://premioapps.com/premio/send-feedback-api.php', [ 'body' => $apiParams, 'timeout' => 15, 'sslverify' => true ] );
+
+		if ( is_wp_error( $apiResponse ) ) {
+			wp_safe_remote_post( 'https://premioapps.com/premio/send-feedback-api.php', [ 'body' => $apiParams, 'timeout' => 15, 'sslverify' => false ] );
+		}
+
+		wp_send_json_success();
 
 	}//end form_review_box_message()
 
@@ -169,19 +173,25 @@ class Star_testimonials_form_review_box
 	 */
 	public function form_review_box()
 	{
-		if (current_user_can('manage_options')) {
-			$nonce = filter_input(INPUT_POST, 'nonce');
-			$days  = filter_input(INPUT_POST, 'days');
-			if (!empty($nonce) && wp_verify_nonce($nonce, $this->pluginSlug."_review_box")) {
-				if ($days == -1) {
-					add_option($this->pluginSlug."_hide_review_box", "1");
-				} else {
-					$date = date("Y-m-d", strtotime("+".$days." days"));
-					update_option($this->pluginSlug."_show_review_box_after", $date);
-				}
-			}
-			die;
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error();
 		}
+
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, $this->pluginSlug . '_review_box' ) ) {
+			wp_send_json_error();
+		}
+
+		$days = isset( $_POST['days'] ) ? intval( wp_unslash( $_POST['days'] ) ) : 0;
+
+		if ( -1 === $days ) {
+			add_option( $this->pluginSlug . '_hide_review_box', '1' );
+			wp_send_json_success();
+		}
+
+		$date = date( 'Y-m-d', strtotime( '+' . $days . ' days' ) );
+		update_option( $this->pluginSlug . '_show_review_box_after', $date );
+		wp_send_json_success();
 
 	}//end form_review_box()
 
@@ -454,25 +464,34 @@ class Star_testimonials_form_review_box
             <!-- default layout -->
             <div class="<?php echo esc_attr($this->pluginSlug) ?>-premio-review-box__default">
                 <h2 class="<?php echo esc_attr($this->pluginSlug) ?>-premio-review-box__default__title">
-					<?php esc_html_e('Your', 'stars-testimonials') ?> <span><?php esc_html_e('feedback', 'stars-testimonials') ?></span> <?php esc_html_e('matters, please leave a review', 'stars-testimonials') ?> 🙏
+					<?php esc_html_e('Your', 'stars-testimonials-with-slider-and-masonry-grid') ?> <span><?php esc_html_e('feedback', 'stars-testimonials-with-slider-and-masonry-grid') ?></span> <?php esc_html_e('matters, please leave a review', 'stars-testimonials-with-slider-and-masonry-grid') ?> 🙏
                 </h2>
 
                 <button class="<?php echo esc_attr($this->pluginSlug) ?>-review-box-default__dismiss-btn">
                     <span class="dashicons dashicons-no-alt"></span>
                 </button>
 
-                <p><?php printf( esc_html__("Hi there, it seems like %s is bringing you some value, and that's pretty awesome! Can you please show us some love and rate %s on WordPress? It'll only take 2 minutes of your time, and will really help us spread the word", 'stars-testimonials'), "<b>".$this->pluginName."</b>", $this->pluginName);?></p>
+                <p>
+                    <?php 
+                        printf(
+                            /* translators: 1: plugin name, 2: plugin name. */
+                            esc_html__( "Hi there, it seems like %1\$s is bringing you some value, and that's pretty awesome! Can you please show us some love and rate %2\$s on WordPress? It'll only take 2 minutes of your time, and will really help us spread the word", 'stars-testimonials-with-slider-and-masonry-grid' ),
+                            '<b>' . esc_html( $this->pluginName ) . '</b>',
+                            esc_html( $this->pluginName )
+                        );
+                    ?>
+                </p>
 
                 <div class="<?php echo esc_attr($this->pluginSlug) ?>-premio-review-box__default__co-founder">
                     <span>
-                        <b><?php esc_html_e('Gal Dubinski', 'stars-testimonials') ?></b>,
-                        <?php esc_html_e('Co-founder', 'stars-testimonials') ?>
+                        <b><?php esc_html_e('Gal Dubinski', 'stars-testimonials-with-slider-and-masonry-grid') ?></b>,
+                        <?php esc_html_e('Co-founder', 'stars-testimonials-with-slider-and-masonry-grid') ?>
                     </span>
                     <img class="<?php echo esc_attr($this->pluginSlug) ?>-premio-review-box__default__co-founder-img" width="30" height="30" src="<?php echo esc_url(TESTIMONIAL_PLUGIN_URL."images/premio-owner.png") ?>" />
                 </div>
 
                 <div class="please-rate-us">
-                    <div class="rate-us-title"><?php esc_html_e("Please rate us:"); ?></div>
+                    <div class="rate-us-title"><?php esc_html_e('Please rate us:', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
                     <div class="<?php echo esc_attr($this->pluginSlug) ?>-premio-review-box__default__rating"></div>
                 </div>
             </div> <!--end .premio-review-box__default-->
@@ -486,9 +505,9 @@ class Star_testimonials_form_review_box
                     <img class="<?php echo esc_attr($this->pluginSlug) ?>-premio-review-box__thank-you__image" width="200" src="<?php echo esc_url(TESTIMONIAL_PLUGIN_URL."images/thanks.gif") ?>" />
 
                     <div class="<?php echo esc_attr($this->pluginSlug) ?>-premio-review-box__thank-you__message">
-                        <div class="title"><?php esc_html_e("You are awesome ", 'stars-testimonials')?> &#128591;</div>
-                        <div class="desc"><?php esc_html_e("Thanks for your support, we really appreciate it!", 'stars-testimonials')?></div>
-                        <div class="footer"><?php esc_html_e("Premio team ", 'stars-testimonials')?></div>
+                        <div class="title"><?php esc_html_e("You are awesome ", 'stars-testimonials-with-slider-and-masonry-grid')?> &#128591;</div>
+                        <div class="desc"><?php esc_html_e("Thanks for your support, we really appreciate it!", 'stars-testimonials-with-slider-and-masonry-grid')?></div>
+                        <div class="footer"><?php esc_html_e("Premio team ", 'stars-testimonials-with-slider-and-masonry-grid')?></div>
                     </div>
                 </div>
             </div> <!--end .premio-review-box__thank-you-->
@@ -500,13 +519,13 @@ class Star_testimonials_form_review_box
                         <span class="dashicons dashicons-no-alt"></span>
                     </button>
                     <div class="<?php echo esc_attr($this->pluginSlug) ?>-review-box-popup__title">
-						<?php esc_html_e("Would you like us to remind you about this later?", 'stars-testimonials')?>
+						<?php esc_html_e("Would you like us to remind you about this later?", 'stars-testimonials-with-slider-and-masonry-grid')?>
                     </div>
 
                     <div class="<?php echo esc_attr($this->pluginSlug) ?>-review-box-popup__options">
-                        <a href="#" data-days="3"><?php esc_html_e("Remind me in 3 days ", 'stars-testimonials')?></a>
-                        <a href="#" data-days="10"><?php esc_html_e("Remind me in 10 days ", 'stars-testimonials')?></a>
-                        <a href="#" data-days="-1" class="dismiss"><?php esc_html_e("Don't remind me about this ", 'stars-testimonials')?></a>
+                        <a href="#" data-days="3"><?php esc_html_e("Remind me in 3 days ", 'stars-testimonials-with-slider-and-masonry-grid')?></a>
+                        <a href="#" data-days="10"><?php esc_html_e("Remind me in 10 days ", 'stars-testimonials-with-slider-and-masonry-grid')?></a>
+                        <a href="#" data-days="-1" class="dismiss"><?php esc_html_e("Don't remind me about this ", 'stars-testimonials-with-slider-and-masonry-grid')?></a>
                     </div>
                 </div>
             </div> <!--end .review-box-popup-->
@@ -518,8 +537,8 @@ class Star_testimonials_form_review_box
                         <span class="dashicons dashicons-no-alt"></span>
                     </button>
                     <form class="<?php echo esc_attr($this->pluginSlug) ?>-feedback-popup__form">
-                        <textarea name="message" id="message" cols="30" rows="5" placeholder="What's your feedback?"></textarea>
-                        <button id="submit-btn" type="submit"><?php esc_html_e('Submit', 'stars-testimonials') ?></button>
+                        <textarea name="message" id="message" cols="30" rows="5" placeholder="<?php echo esc_attr__( "What's your feedback?", 'stars-testimonials-with-slider-and-masonry-grid' ); ?>"></textarea>
+                        <button id="submit-btn" type="submit"><?php esc_html_e('Submit', 'stars-testimonials-with-slider-and-masonry-grid') ?></button>
                     </form>
                 </div>
             </div> <!--end .feedback-popup-->
@@ -530,9 +549,8 @@ class Star_testimonials_form_review_box
             (function($) {
                 function StarsTestimonialsFreeReview() {
                     this.prefix     = "<?php echo esc_attr($this->pluginSlug) ?>";
-                    this.reviewLink = "https://wordpress.org/support/plugin/<?php echo esc_attr($this->wpPluginSlug) ?>/reviews/?filter=5";
-                    this.rating     = 5;
-
+                    this.reviewLink = "https://wordpress.org/support/plugin/<?php echo esc_attr($this->wpPluginSlug) ?>/reviews/";
+                    this.rating     = 5; 
                     this.renderRating();
                     this.bindEvents();
                 }
@@ -612,7 +630,7 @@ class Star_testimonials_form_review_box
                     const rating     = this.rating;
 
                     $.ajax({
-                        url: "<?php echo admin_url("admin-ajax.php") ?>",
+                        url: "<?php echo esc_url(admin_url("admin-ajax.php")) ?>",
                         data: {
                             action: "<?php echo esc_attr($this->pluginSlug) ?>_review_box_message",
                             rating: rating,
@@ -648,7 +666,7 @@ class Star_testimonials_form_review_box
 
                 StarsTestimonialsFreeReview.prototype.sendHideRequest = function( dataDays = -1 ) {
                     $.ajax({
-                        url: "<?php echo admin_url("admin-ajax.php") ?>",
+                        url: "<?php echo esc_url(admin_url("admin-ajax.php")) ?>",
                         data: "action=<?php echo esc_attr($this->pluginSlug) ?>_review_box&days=" + dataDays + "&nonce=<?php echo esc_attr(wp_create_nonce($this->pluginSlug."_review_box")) ?>",
                         type: "post",
                     });

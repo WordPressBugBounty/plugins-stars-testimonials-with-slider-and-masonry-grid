@@ -1,12 +1,13 @@
 <?php if ( ! defined( 'ABSPATH' ) ) exit; ?>
 <div class="figure st-style12">
-  <img width="440" height="320" class="attachment-full size-full wp-post-image" src="<?php echo plugins_url( '../../images/admin/user-'.$j.'.jpg', __FILE__ ) ?>" alt="<?php esc_html_e('User '.$j, 'stars-testimonials'); ?>"/>
+  <?php // translators: %s is replaced by the user number. ?>
+  <img width="440" height="320" class="attachment-full size-full wp-post-image" src="<?php echo esc_url( plugins_url( '../../images/admin/user-'.$j.'.jpg', __FILE__ ) ); ?>" alt="<?php echo esc_attr( sprintf( esc_html__( 'User %s', 'stars-testimonials-with-slider-and-masonry-grid' ), $j ) ); ?>"/>
   <div class="figcaption st-testimonial-bg">
-    <h3 class="st-testimonial-title"><?php echo esc_attr($clientArray[$j-1]); ?></h3>
-    <h5 class="st-testimonial-company"><?php echo esc_attr($companyArray[$j-1]); ?></h5>
+    <h3 class="st-testimonial-title"><?php echo esc_html($clientArray[$j-1]); ?></h3>
+    <h5 class="st-testimonial-company"><?php echo esc_html($companyArray[$j-1]); ?></h5>
     <div class="blockquote st-testimonial-content st-testimonial-bg">
-      <p><?php esc_html_e("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", 'stars-testimonials') ?></p>
+      <p><?php esc_html_e("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", 'stars-testimonials-with-slider-and-masonry-grid') ?></p>
       <span class="cp-load-after-post"></span>
     </div>
-  </div><?php echo esc_attr((isset($url) && $url != '') ? '<a href="'.$company.'"></a>' : '' ); ?>
+  </div><?php echo (isset($url) && $url != '') ? '<a href="'.esc_url($url).'"></a>' : ''; ?>
 </div>

@@ -1,14 +1,14 @@
-=== Free Responsive Testimonials, Social Proof Reviews, and Customer Reviews - Stars Testimonials ===
+=== Stars Testimonials — Responsive Reviews & Star Ratings ===
 Contributors: galdub, tomeraharon, premio
 Tags: testimonials, reviews, customers reviews, collect reviews, collect testimonials
 Requires at least: 3.5
-Tested up to: 6.7
-Stable tag: 3.3.4
+Tested up to: 6.9
+Stable tag: 3.3.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Plugin URI: https://premio.io/downloads/stars-testimonials/
 
-⭐ Testimonials & reviews WordPress plugin for your website. Display responsive website testimonials and customers reviews with ease 😍
+Testimonials & reviews WordPress plugin for your website. Display responsive website testimonials and customer reviews with ease ⭐
 
 == Description ==
 
@@ -122,6 +122,9 @@ Ready to start converting more visitors into customers? Then it’s time to show
 
 Download the Stars Testimonial plugin today and get started designing your testimonial widget! 
 
+The plugin uses 3rd party API that allows users to submit feedback directly. The data is sent if you decide to deactivate the plugin and it includes your only data your agree to share like your email and reason for deactivation (both are optional fields). Your email will also be added to our email marketing platform with your consent (with the option to unsubscribe at any point). You can review the <a href="https://premio.io/terms-of-service/" target="_blank">Terms of service</a>
+ and <a href="https://premio.io/privacy-policy-3/" target="_blank">Privacy policy</a>.
+
 = Testimonials =
 
 > "It’s really helpfull – recommendable!<br>
@@ -177,6 +180,9 @@ Just follow our <a href="https://premio.io/wordpress-premio-pro-version-installa
 
 == Changelog ==
 
+= 3.3.5 =
+Removed disallowed files, documented external services, corrected internationalization, strengthened nonces, sanitization, escaping, and other bug fixes
+
 = 3.3.4 =
 Display bug fixed
 
@@ -207,7 +213,7 @@ Pro feature: add a “Read More” button to your reviews and a character limit
 Pro feature: ratings compatibility with Google snippets
 
 = 3.2.5 =
-Dobule slash bug fixed
+Double slash bug fixed
 
 = 3.2.4 =
 UI bug fixed
@@ -234,7 +240,7 @@ Plans page fix
 JS sort bug was fixed, and we've also removed some limitations from the free version
 
 = 3.1.6 =
-You can now create umlimited amount of testimonials 
+You can now create unlimited amount of testimonials
 
 = 3.1.5 =
 WP 5.5

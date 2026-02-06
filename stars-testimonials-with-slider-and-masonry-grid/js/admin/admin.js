@@ -256,52 +256,89 @@ function rgb2hex(rgb){
     ("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : '';
 }
 function reserData() {
+    // Reset style selection to the first available option
+    var $styleInputs = jQuery("#grid-form input[name='testimonial_style']");
+    var $activeStyle = $styleInputs.filter(":checked").first();
+    if(!$activeStyle.length) {
+        $activeStyle = $styleInputs.not(":disabled").first();
+    }
+    if(!$activeStyle.length) {
+        $activeStyle = jQuery("#grid-form .radio-btn").not(":disabled").first();
+    }
+    if($activeStyle.length) {
+        $styleInputs.prop("checked", false);
+        $activeStyle.prop("checked", true).trigger("change");
+        jQuery(".grid-form-row").removeClass("active");
+        $activeStyle.closest(".grid-form-row").addClass("active");
+        jQuery("#testimonial_style").val($activeStyle.val());
+    }
+
+    // Base defaults
     jQuery(".grid-style-box .col-1-3, .grid-style-box .col-1-2").addClass("preview-row");
     jQuery("#grid_columns").asRange('val', '3');
+    jQuery("#grid_columns").val("3");
+    jQuery("#no_of_testimonials").val("3");
     jQuery("#slides_to_scroll").asRange('val', '1');
-    jQuery("#custom-color input[type='radio']").attr("checked",false);
+    jQuery("#custom-color input[type='radio']").prop("checked",false);
     jQuery(".testimonial-color-picker").val("");
     jQuery(".custom-color-box span").css("background-color","transparent");
     jQuery(".custom-color-box span i").removeClass("fa-check").addClass("fa-question");
     jQuery(".custom-color-box span").removeClass("active");
     jQuery("#grid_categories").val("").trigger("change");
-    boxHtml = jQuery("#grid-form .radio-btn:checked").closest(".grid-form-row").find(".grid-style-box .preview-row:first").html();
-    jQuery(".preview-section .preview-inner").html(boxHtml+'<div class="clear"></div>');
+
+ 
+    // Slider related defaults
     jQuery("#testimonial-scroll-speed-1").trigger("click");
     jQuery("#slider-interval-1").trigger("click");
-    jQuery("#navigation_dots").attr("checked",true);
-    jQuery("#navigation_arrows").attr("checked",true);
-    jQuery("#is_slider_autoplay").attr("checked",true);
-    jQuery(".select-content li:first").trigger("click");
+    jQuery("#navigation_dots, #navigation_arrows, #is_slider_autoplay").prop("checked",true);
+
+    // Font defaults
     jQuery(".select-content .active").removeClass("active");
+    var $firstFont = jQuery(".select-content li:first");
+    $firstFont.addClass("active");
+    var defaultFont = $firstFont.data("value") || $firstFont.text();
+    jQuery(".custom-select").val(defaultFont);
+    jQuery(".custom-select, #preview-box figure, #preview-box blockquote").css("font-family","");
     jQuery("#font_family").attr("style","");
+
+    // Misc fields
     jQuery("#shortcode_name").val("");
     jQuery("#testimonial_order").val("1").trigger("change");
-    setStyleColor(jQuery("#grid-form .radio-btn:checked").val());
+    setStyleColor(jQuery("#grid-form input[name='testimonial_style']:checked").val());
 }
 
 function setStyleColor(styleNo) {
-    styleNo = parseInt(styleNo)-1;
-    styleJSON = settings.stylesObj;
-    styleArray = jQuery.parseJSON(styleJSON);
-    styleArray = jQuery.makeArray(styleArray);
-    styleArray = styleArray[0];
-    jQuery(".dynamic-color-col").each( function(){
-        jQuery(this).show();
-        thisType = jQuery(this).data("col");
-        jQuery(this).find("input:checked").attr("checked",false);
-        if(styleArray[thisType][styleNo] != undefined) {
-            thisCSS = styleArray[thisType][styleNo];
-            jQuery(this).find('input[type="radio"]').each(function(){
+    var parsedStyle = parseInt(styleNo, 10);
+    var styleIndex = isNaN(parsedStyle) ? 0 : parsedStyle - 1;
+    var styleJSON = settings.stylesObj || '{}';
+    var styleArray = jQuery.makeArray(jQuery.parseJSON(styleJSON));
+    styleArray = styleArray[0] || {};
+
+    jQuery(".dynamic-color-col").each(function(){
+        var $col = jQuery(this);
+        $col.show();
+        var thisType = $col.data("col");
+        $col.find("input:checked").prop("checked",false);
+
+        var thisCSS = (styleArray[thisType] && styleArray[thisType][styleIndex]) ? styleArray[thisType][styleIndex] : null;
+        var $match = jQuery();
+        if(thisCSS !== null) {
+            $col.find('input[type="radio"]').each(function(){
                 if(jQuery(this).val() == thisCSS) {
-                    jQuery(this).attr("checked",true);
-                    jQuery(this).trigger("change");
+                    $match = jQuery(this);
                 }
             });
         }
-        if(jQuery(this).find("input:checked").length == 0) {
-            jQuery(this).hide();
+
+        if(!$match.length) {
+            $match = $col.find('input[type="radio"]').not(":disabled").first();
         }
+
+        if($match.length) {
+            $match.prop("checked", true);
+            $match.trigger("change");
+        }
+
         if(jQuery("#testimonial_type").val() != "slider") {
             jQuery(".color-arrow-col").hide();
         }

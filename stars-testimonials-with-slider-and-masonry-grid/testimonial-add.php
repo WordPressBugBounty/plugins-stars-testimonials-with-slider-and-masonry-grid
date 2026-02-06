@@ -2,21 +2,21 @@
 <div class="wrap">
     <h2></h2>
     <div class="testimonial-page">
-        <div class="testimonial-title"><?php esc_html_e("Create new testimonial",'stars-testimonials');?></div>
+        <div class="testimonial-title"><?php esc_html_e("Create new testimonial",'stars-testimonials-with-slider-and-masonry-grid');?></div>
         <div class="testimonial-form">
-            <form action="<?php echo admin_url() ?>" id="add_testimonial_item" method="post" >
+            <form action="<?php echo esc_url( admin_url() ) ?>" id="add_testimonial_item" method="post" >
                 <div class="tst-form-field">
                     <div class="tst-form-field-left">
-                        <label for="post_title"><?php esc_html_e("Client's name:",'stars-testimonials');?></label>
+                        <label for="post_title"><?php esc_html_e("Client's name:",'stars-testimonials-with-slider-and-masonry-grid');?></label>
                     </div>
                     <div class="tst-form-field-right">
-                        <input type="text" class="required" data-label="Client's name" name="post_title" id="post_title" placeholder="Example Client">
+                        <input type="text" class="required" data-label="<?php echo esc_attr__("Client's name", 'stars-testimonials-with-slider-and-masonry-grid'); ?>" name="post_title" id="post_title" placeholder="<?php echo esc_attr__("Example Client", 'stars-testimonials-with-slider-and-masonry-grid'); ?>">
                     </div>
                     <div class="clear"></div>
                 </div>
                 <div class="tst-form-field">
                     <div class="tst-form-field-left">
-                        <label for="testimonial_text"><?php esc_html_e("Testimonial text:",'stars-testimonials');?></label>
+                        <label for="testimonial_text"><?php esc_html_e("Testimonial text:",'stars-testimonials-with-slider-and-masonry-grid');?></label>
                     </div>
                     <div class="tst-form-field-right">
                         <div class="testimonial-text-area">
@@ -28,7 +28,7 @@
                                 'textarea_name' => 'testimonial_text',
                                 'textarea_rows' => 10,
                                 'quicktags' => false,
-                                'placeholder' => 'itis test',
+                                'placeholder' => esc_html__( 'Type in the testimonial here', 'stars-testimonials-with-slider-and-masonry-grid' ),
                                 'tinymce'       => array(
                                     'toolbar2'      => '',
                                     'toolbar3'      => '',
@@ -36,7 +36,7 @@
                             );
                             wp_editor("", "testimonial_text", $settings );
                             ?>
-                            <div class="tst-placeholder"><?php esc_html_e("Type in the testimonial here",'stars-testimonials');?></div>
+                            <div class="tst-placeholder"><?php esc_html_e("Type in the testimonial here",'stars-testimonials-with-slider-and-masonry-grid');?></div>
                         </div>
                     </div>
                     <div class="clear"></div>
@@ -46,19 +46,19 @@
                 </div>
                 <div class="tst-form-field">
                     <div class="tst-form-field-left">
-                        <label for="company_name"><?php esc_html_e("Company name and role:",'stars-testimonials');?></label>
+                        <label for="company_name"><?php esc_html_e("Company name and role:",'stars-testimonials-with-slider-and-masonry-grid');?></label>
                     </div>
                     <div class="tst-form-field-right">
-                        <input type="text" name="company_name" id="company_name" placeholder="Company Inc">
+                        <input type="text" name="company_name" id="company_name" placeholder="<?php echo esc_attr__( 'Company Inc', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>">
                     </div>
                     <div class="clear"></div>
                 </div>
                 <div class="tst-form-field">
                     <div class="tst-form-field-left">
-                        <label for="website_link"><?php esc_html_e("Website link (optional):",'stars-testimonials');?></label>
+                        <label for="website_link"><?php esc_html_e("Website link (optional):",'stars-testimonials-with-slider-and-masonry-grid');?></label>
                     </div>
                     <div class="tst-form-field-right">
-                        <input type="text" name="website_link" id="website_link" placeholder="https://www.example.com">
+                        <input type="text" name="website_link" id="website_link" placeholder="<?php echo esc_attr__( 'https://www.example.com', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>">
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -74,7 +74,7 @@
                 ?>
                 <div class="tst-form-field">
                     <div class="tst-form-field-left">
-                        <label for="website_link"><?php esc_html_e("Stars rating:",'stars-testimonials');?></label>
+                        <label for="website_link"><?php esc_html_e("Stars rating:",'stars-testimonials-with-slider-and-masonry-grid');?></label>
                     </div>
                     <div class="tst-form-field-right">
                         <div class="star-container">
@@ -99,14 +99,14 @@
                 </div>
                 <div class="tst-form-field">
                     <div class="tst-form-field-left">
-                        <label for="website_link"><?php esc_html_e("Client's image",'stars-testimonials');?></label>
+                        <label for="website_link"><?php esc_html_e("Client's image",'stars-testimonials-with-slider-and-masonry-grid');?></label>
                     </div>
                     <div class="tst-form-field-right">
                         <div class="image-preview"></div>
                         <div class="image-buttons">
-                            <button type="button" class="button button-secondary upload-image"><?php esc_html_e("Upload client image",'stars-testimonials');?></button>
-                            <button type="button" class="button button-secondary remove-image"><?php esc_html_e("Remove image",'stars-testimonials');?></button>
-                            <span class="tooltip-message"><?php esc_html_e("Recommended sizes",'stars-testimonials');?> <span class="custom-tooltip"><span class="tooltip-text"><?php esc_html_e("For testimonials with ",'stars-testimonials');?><b><?php esc_html_e("square images ",'stars-testimonials');?></b><?php esc_html_e(", the recommended size is ",'stars-testimonials');?><b><?php esc_html_e("150x150",'stars-testimonials');?></b><span class="divider-custom"></span><?php esc_html_e("For testimonials with",'stars-testimonials');?>  <b><?php esc_html_e("rectangle images",'stars-testimonials');?></b><?php esc_html_e(", the recommended size is ",'stars-testimonials');?><b><?php esc_html_e("440x320",'stars-testimonials');?></b></span><span class="dashicons dashicons-editor-help"></span></span></span>
+                            <button type="button" class="button button-secondary upload-image"><?php esc_html_e("Upload client image",'stars-testimonials-with-slider-and-masonry-grid');?></button>
+                            <button type="button" class="button button-secondary remove-image"><?php esc_html_e("Remove image",'stars-testimonials-with-slider-and-masonry-grid');?></button>
+                            <span class="tooltip-message"><?php esc_html_e("Recommended sizes",'stars-testimonials-with-slider-and-masonry-grid');?> <span class="custom-tooltip"><span class="tooltip-text"><?php esc_html_e("For testimonials with ",'stars-testimonials-with-slider-and-masonry-grid');?><b><?php esc_html_e("square images ",'stars-testimonials-with-slider-and-masonry-grid');?></b><?php esc_html_e(", the recommended size is ",'stars-testimonials-with-slider-and-masonry-grid');?><b><?php esc_html_e("150x150",'stars-testimonials-with-slider-and-masonry-grid');?></b><span class="divider-custom"></span><?php esc_html_e("For testimonials with",'stars-testimonials-with-slider-and-masonry-grid');?>  <b><?php esc_html_e("rectangle images",'stars-testimonials-with-slider-and-masonry-grid');?></b><?php esc_html_e(", the recommended size is ",'stars-testimonials-with-slider-and-masonry-grid');?><b><?php esc_html_e("440x320",'stars-testimonials-with-slider-and-masonry-grid');?></b></span><span class="dashicons dashicons-editor-help"></span></span></span>
                             <input type="hidden" name="client_image" id="client_image" >
                         </div>
                     </div>
@@ -123,13 +123,13 @@
                 ?>
                 <div class="tst-form-field">
                     <div class="tst-form-field-left">
-                        <label for="company_name"><?php esc_html_e("Categories (optional):",'stars-testimonials');?></label>
+                        <label for="company_name"><?php esc_html_e("Categories (optional):",'stars-testimonials-with-slider-and-masonry-grid');?></label>
                     </div>
                     <div class="tst-form-field-right">
                         <div class="select-box select-box-custom">
                             <select name="testimonial_categories[]" id="grid_categories" class="select-box select2" multiple="multiple" >
                                 <?php foreach($terms as $term) {
-                                    echo "<option value='{$term->term_id}'>{$term->name}</option>";
+                                    echo "<option value='" . esc_attr( $term->term_id ) . "'>" . esc_html( $term->name ) . "</option>";
                                 } ?>
                             </select>
                         </div>
@@ -141,12 +141,12 @@
                         <label for="website_link">&nbsp;</label>
                     </div>
                     <div class="tst-form-field-right">
-                        <button type="submit" class="submit-button testimonial-button"><?php esc_html_e("Save Changes",'stars-testimonials');?></button>
+                        <button type="submit" class="submit-button testimonial-button"><?php esc_html_e("Save Changes",'stars-testimonials-with-slider-and-masonry-grid');?></button>
                     </div>
                     <div class="clear"></div>
                 </div>
                 <input type="hidden" name="action" value="save_premio_testimonial_post">
-                <input type="hidden" name="nonce" value="<?php echo wp_create_nonce("add_premio_testimonial_post") ?>" >
+                <input type="hidden" name="nonce" value="<?php echo esc_attr( wp_create_nonce("add_premio_testimonial_post") ) ?>" >
                 <input type="hidden" name="id" value="">
             </form>
         </div>
@@ -193,11 +193,11 @@
         stars.slice(val, 5).attr("class", "pst-star-o");
     }
 
-    jQuery("title").text("Create new testimonial");
+    jQuery("title").text("<?php echo esc_html__( 'Create new testimonial', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>");
     jQuery(".menu-icon-stars_testimonial .current").removeClass("current");
 
     jQuery(document).ready(function () {
-        jQuery("title").text("Create new testimonial");
+        jQuery("title").text("<?php echo esc_html__( 'Create new testimonial', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>");
         jQuery(".starrate span.ctrl").width(jQuery(".starrate span.cont").width());
         jQuery(".starrate span.ctrl").height(jQuery(".starrate span.cont").height());
 
@@ -209,7 +209,7 @@
         });
         jQuery(document).on("click", ".upload-image", function(){
             var imageTst = wp.media({
-                title: 'Upload Image',
+                title: '<?php echo  esc_html__( 'Upload Image', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>',
                 multiple: false,
                 library: {
                     type: 'image'
@@ -221,7 +221,7 @@
                     jQuery('.remove-image').addClass("active");
                     jQuery('#client_image').val(imageData.id);
                     jQuery('.image-preview').html("<img src='"+imageData.url+"' />");
-                    change_custom_preview();
+                    // change_custom_preview();
                 });
         });
 
@@ -233,21 +233,21 @@
                if(jQuery.trim(jQuery(this).val()) == "") {
                    errorCount++;
                    jQuery(this).addClass("input-error");
-                   jQuery(this).after("<span class='error-message'>"+jQuery(this).attr("data-label")+" is required</span>");
+                   jQuery(this).after("<span class='error-message'>"+jQuery(this).attr("data-label")+" <?php echo esc_html__( 'is required', 'stars-testimonials-with-slider-and-masonry-grid' ); ?></span>");
                }
             });
 
             if(errorCount == 0) {
                 var data = jQuery("#add_testimonial_item").serialize();
                 jQuery(".testimonial-button").attr("disabled", true);
-                jQuery.post("<?php echo admin_url("admin-ajax.php") ?>", data, function (response) {
+                jQuery.post("<?php echo esc_url( admin_url("admin-ajax.php") ); ?>", data, function (response) {
                     response = jQuery.parseJSON(response);
                     if(response.status == 1) {
-                        window.location = "<?php echo admin_url("edit.php?post_type=stars_testimonial") ?>";
+                        window.location = <?php echo wp_json_encode( admin_url("edit.php?post_type=stars_testimonial") ); ?>;
                     } else {
                         jQuery(".testimonial-button").attr("disabled", false);
                         Swal.fire({
-                            title: 'Error!',
+                            title: '<?php echo esc_html__( 'Error!', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>',
                             text: response.message,
                             type: 'error'
                         });

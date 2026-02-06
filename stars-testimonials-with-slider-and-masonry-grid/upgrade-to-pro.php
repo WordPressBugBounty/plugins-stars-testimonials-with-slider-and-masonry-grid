@@ -1,26 +1,28 @@
-<?php $pro_url = "https://go.premio.io/?edd_action=add_to_cart&download_id=13&edd_options[price_id]=" ?>
+<?php 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+$pro_url = "https://go.premio.io/?edd_action=add_to_cart&download_id=13&edd_options[price_id]=" ?>
 <div class="key-table">
     <div class="modal-upgrade upgrade-block" id="folder-modal">
         <div class="easy-modal-inner">
             <div class="container">
                 <div class="pricing-table">
-                    <div class="price-title"><?php esc_html_e('Unlock All Features', 'stars-testimonials'); ?></div>
+                    <div class="price-title"><?php esc_html_e('Unlock All Features', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
                     <div class="pricing-table-header">
                         <div class="pricing-table-body">
                             <div class="pricing-table-content first active" data-option="1_year">
-                                <div class="year-col"><?php esc_html_e('1 Year', 'stars-testimonials'); ?></div>
-                                <div class="update-col"><?php esc_html_e('Updates', 'stars-testimonials'); ?> &amp; <?php esc_html_e('Support', 'stars-testimonials'); ?></div>
+                                <div class="year-col"><?php esc_html_e('1 Year', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
+                                <div class="update-col"><?php esc_html_e('Updates', 'stars-testimonials-with-slider-and-masonry-grid'); ?> &amp; <?php esc_html_e('Support', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
                                 <div class="pricing-discount-col"></div>
                             </div>
                             <div class="pricing-table-content second" data-option="2_year">
-                                <div class="year-col"><?php esc_html_e('2 Years', 'stars-testimonials'); ?></div>
-                                <div class="update-col"><?php esc_html_e('Updates', 'stars-testimonials'); ?> &amp; <?php esc_html_e('Support', 'stars-testimonials'); ?></div>
-                                <div class="pricing-discount-col"><span><?php esc_html_e('32% off', 'stars-testimonials'); ?> &#128526;</span></div>
+                                <div class="year-col"><?php esc_html_e('2 Years', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
+                                <div class="update-col"><?php esc_html_e('Updates', 'stars-testimonials-with-slider-and-masonry-grid'); ?> &amp; <?php esc_html_e('Support', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
+                                <div class="pricing-discount-col"><span><?php esc_html_e('32% off', 'stars-testimonials-with-slider-and-masonry-grid'); ?> &#128526;</span></div>
                             </div>
                             <div class="pricing-table-content third" data-option="lifetime">
-                                <div class="year-col"><?php esc_html_e('Lifetime', 'stars-testimonials'); ?></div>
-                                <div class="update-col"><?php esc_html_e('Updates', 'stars-testimonials'); ?> &amp; <?php esc_html_e('Support', 'stars-testimonials'); ?></div>
-                                <div class="pricing-discount-col"><span><?php esc_html_e('63% off', 'stars-testimonials'); ?> &#129395;</span></div>
+                                <div class="year-col"><?php esc_html_e('Lifetime', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
+                                <div class="update-col"><?php esc_html_e('Updates', 'stars-testimonials-with-slider-and-masonry-grid'); ?> &amp; <?php esc_html_e('Support', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
+                                <div class="pricing-discount-col"><span><?php esc_html_e('63% off', 'stars-testimonials-with-slider-and-masonry-grid'); ?> &#129395;</span></div>
                             </div>
                         </div>
                     </div>
@@ -30,40 +32,40 @@
                                 <div class="price-table basic-feature">
                                     <div class="price-table-top">
                                         <div class="price-head">
-                                            <div class="plan-name"><?php esc_html_e('Basic', 'stars-testimonials'); ?></div>
-                                            <div class="plan-price"><?php esc_html_e('$25', 'stars-testimonials'); ?><span><?php esc_html_e('/year', 'stars-testimonials'); ?></span></div>
+                                            <div class="plan-name"><?php esc_html_e('Basic', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
+                                            <div class="plan-price"><?php esc_html_e('$25', 'stars-testimonials-with-slider-and-masonry-grid'); ?><span><?php esc_html_e('/year', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></div>
                                         </div>
                                         <div class="plan-center">
                                             <div class="price-permonth">Less than <b>$2.5</b>/mo <span class="full-width-bold">Billed Yearly</span></div>
                                             <!--div class="price-websites">For small website owners</div-->
-                                            <div class="price-offer"><?php esc_html_e('Renewals for 25% off', 'stars-testimonials'); ?></div>
+                                            <div class="price-offer"><?php esc_html_e('Renewals for 25% off', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
                                         </div>
                                     </div>
                                     <div class="price-table-middle">
                                         <ul>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('1 website', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Use Stars Testimonials on 1 domain', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All styles', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('All testimonials templates will be available for you', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All colors', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You will be able to change the colors of the testimonials components, including using HEX code', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Slider & Wall', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You can change the way the testimonials will be displayed', 'stars-testimonials'); ?></span></a></li>
-											<li class="on-screen-pos"><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Collect testimonials', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Collect testimonials from your website  visitors by showing a button under your testimonials widget. Your testimonials will be added once you approve them. You can also create a direct link to your clients so they can submit their testimonials.', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Rating Schema support for Google search pages', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Add rating schema to your WordPress pages where you use Stars Testimonial shortcode. Google search results would show up with the ratings where you have enabled the feature', 'stars-testimonials'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('1 website', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Use Stars Testimonials on 1 domain', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All styles', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('All testimonials templates will be available for you', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All colors', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You will be able to change the colors of the testimonials components, including using HEX code', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Slider & Wall', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You can change the way the testimonials will be displayed', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+											<li class="on-screen-pos"><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Collect testimonials', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Collect testimonials from your website  visitors by showing a button under your testimonials widget. Your testimonials will be added once you approve them. You can also create a direct link to your clients so they can submit their testimonials.', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Rating Schema support for Google search pages', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Add rating schema to your WordPress pages where you use Stars Testimonial shortcode. Google search results would show up with the ratings where you have enabled the feature', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
                                         </ul>
                                     </div>
                                     <div class="price-table-bottom">
                                         <div class="custom-dd">
                                             <select class="multiple-options">
                                                 <option data-per-month="2.5" data-option="1_year" data-header="Renewals for 25% off" data-price="25" value="<?php echo esc_url($pro_url."22") ?>">
-                                                    <?php esc_html_e("Updates & support for 1 year") ?>
+                                                    <?php esc_html_e("Updates & support for 1 year", 'stars-testimonials-with-slider-and-masonry-grid') ?>
                                                 </option>
                                                 <option data-per-month="2" data-option="2_year" data-header="For 2 years" data-price="39" value="<?php echo esc_url($pro_url."23") ?>">
-                                                    <?php esc_html_e("Updates & support for 2 years") ?>
+                                                    <?php esc_html_e("Updates & support for 2 years", 'stars-testimonials-with-slider-and-masonry-grid') ?>
                                                 </option>
                                                 <option data-per-month="" data-option="lifetime" data-header="For lifetime" data-price="79" value="<?php echo esc_url($pro_url."24") ?>">
-                                                    <?php esc_html_e("Updates & support for lifetime") ?>
+                                                    <?php esc_html_e("Updates & support for lifetime", 'stars-testimonials-with-slider-and-masonry-grid') ?>
                                                 </option>
                                             </select>
                                         </div>
-                                        <a class="cart-link" target="_blank" href="<?php echo esc_url($pro_url."22") ?>"><?php esc_html_e('Buy now', 'stars-testimonials'); ?></a>
+                                        <a class="cart-link" target="_blank" href="<?php echo esc_url($pro_url."22") ?>"><?php esc_html_e('Buy now', 'stars-testimonials-with-slider-and-masonry-grid'); ?></a>
                                     </div>
                                     <div class="bottom-position"></div>
                                 </div>
@@ -72,39 +74,39 @@
                                 <div class="price-table plus-feature">
                                     <div class="price-table-top">
                                         <div class="price-head">
-                                            <div class="plan-name"><?php esc_html_e('Plus', 'stars-testimonials'); ?></div>
-                                            <div class="plan-price"><?php esc_html_e('$59', 'stars-testimonials'); ?><span><?php esc_html_e('/year', 'stars-testimonials'); ?></span></div>
+                                            <div class="plan-name"><?php esc_html_e('Plus', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
+                                            <div class="plan-price"><?php esc_html_e('$59', 'stars-testimonials-with-slider-and-masonry-grid'); ?><span><?php esc_html_e('/year', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></div>
                                         </div>
                                         <div class="plan-center">
                                             <div class="price-permonth">Less than <b>$5</b>/mo <span class="full-width-bold">Billed Yearly</span></div>
-                                            <div class="price-offer"><?php esc_html_e('Renewals for 25% off', 'stars-testimonials'); ?></div>
+                                            <div class="price-offer"><?php esc_html_e('Renewals for 25% off', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
                                         </div>
                                     </div>
                                     <div class="price-table-middle">
                                         <ul>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('5 websites', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Use Stars Testimonials on 5 domains', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All styles', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('All testimonials templates will be available for you', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All colors', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You will be able to change the colors of the testimonials components, including using HEX code', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Slider & Wall', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You can change the way the testimonials will be displayed', 'stars-testimonials'); ?></span></a></li>
-											<li class="on-screen-pos"><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Collect testimonials', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Collect testimonials from your websites visitors by showing a button under your testimonials widget. Your testimonials will be added once you approve them. You can also create a direct link to your clients so they can submit their testimonials.', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Rating Schema support for Google search pages', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Add rating schema to your WordPress pages where you use Stars Testimonial shortcode. Google search results would show up with the ratings where you have enabled the feature', 'stars-testimonials'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('5 websites', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Use Stars Testimonials on 5 domains', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All styles', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('All testimonials templates will be available for you', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All colors', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You will be able to change the colors of the testimonials components, including using HEX code', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Slider & Wall', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You can change the way the testimonials will be displayed', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+											<li class="on-screen-pos"><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Collect testimonials', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Collect testimonials from your websites visitors by showing a button under your testimonials widget. Your testimonials will be added once you approve them. You can also create a direct link to your clients so they can submit their testimonials.', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Rating Schema support for Google search pages', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Add rating schema to your WordPress pages where you use Stars Testimonial shortcode. Google search results would show up with the ratings where you have enabled the feature', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
                                         </ul>
                                     </div>
                                     <div class="price-table-bottom">
                                         <div class="custom-dd">
                                             <select class="multiple-options">
                                                 <option data-per-month="5" data-option="1_year" data-header="Renewals for 25% off" data-price="59" value="<?php echo esc_url($pro_url."25") ?>">
-                                                    <?php esc_html_e("Updates & support for 1 year") ?>
+                                                    <?php esc_html_e("Updates & support for 1 year", 'stars-testimonials-with-slider-and-masonry-grid') ?>
                                                 </option>
                                                 <option data-per-month="4" data-option="2_year" data-header="For 2 years" data-price="89" value="<?php echo esc_url($pro_url."26") ?>">
-                                                    <?php esc_html_e("Updates & support for 2 years") ?>
+                                                    <?php esc_html_e("Updates & support for 2 years", 'stars-testimonials-with-slider-and-masonry-grid') ?>
                                                 </option>
                                                 <option data-per-month="6.5" data-option="lifetime" data-header="For lifetime" data-price="149" value="<?php echo esc_url($pro_url."27") ?>">
-                                                    <?php esc_html_e("Updates & support for lifetime") ?>
+                                                    <?php esc_html_e("Updates & support for lifetime", 'stars-testimonials-with-slider-and-masonry-grid') ?>
                                                 </option>
                                             </select>
                                         </div>
-                                        <a class="cart-link" target="_blank" href="<?php echo esc_url($pro_url."25") ?>"><?php esc_html_e('Buy now', 'stars-testimonials'); ?></a>
+                                        <a class="cart-link" target="_blank" href="<?php echo esc_url($pro_url."25") ?>"><?php esc_html_e('Buy now', 'stars-testimonials-with-slider-and-masonry-grid'); ?></a>
                                     </div>
                                     <div class="bottom-position"></div>
                                 </div>
@@ -113,13 +115,13 @@
                                 <div class="price-table agency-feature">
                                     <div class="price-table-top">
                                         <div class="price-head">
-                                            <div class="plan-name"><?php esc_html_e('Agency', 'stars-testimonials'); ?></div>
-                                            <div class="plan-price"><?php esc_html_e('$99', 'stars-testimonials'); ?><span><?php esc_html_e('/year', 'stars-testimonials'); ?></span></div>
+                                            <div class="plan-name"><?php esc_html_e('Agency', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
+                                            <div class="plan-price"><?php esc_html_e('$99', 'stars-testimonials-with-slider-and-masonry-grid'); ?><span><?php esc_html_e('/year', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></div>
                                         </div>
                                         <div class="plan-center">
                                             <div class="price-permonth">Less than <b>$8.5</b>/mo <span class="full-width-bold">Billed Yearly</span></div>
                                             <!--div class="price-websites">For agencies who manage clients</div-->
-                                            <div class="price-offer"><?php esc_html_e('Renewals for 25% off', 'stars-testimonials'); ?></div>
+                                            <div class="price-offer"><?php esc_html_e('Renewals for 25% off', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
                                         </div>
                                     </div>
                                     <div class="price-table-middle">
@@ -127,34 +129,34 @@
                                             <li>
                                                 <div class="website-package">
                                                     <select class="multiple-web-options">
-                                                        <option value="50_websites"><?php esc_html_e('50 websites', 'stars-testimonials'); ?></option>
-                                                        <option value="500_websites"><?php esc_html_e('500 websites', 'stars-testimonials'); ?></option>
-                                                        <option value="1000_websites"><?php esc_html_e('1000 websites', 'stars-testimonials'); ?></option>
+                                                        <option value="50_websites"><?php esc_html_e('50 websites', 'stars-testimonials-with-slider-and-masonry-grid'); ?></option>
+                                                        <option value="500_websites"><?php esc_html_e('500 websites', 'stars-testimonials-with-slider-and-masonry-grid'); ?></option>
+                                                        <option value="1000_websites"><?php esc_html_e('1000 websites', 'stars-testimonials-with-slider-and-masonry-grid'); ?></option>
                                                     </select>
                                                 </div>
                                             </li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All styles', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('All testimonials templates will be available for you', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All colors', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You will be able to change the colors of the testimonials components, including using HEX code', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Slider & Wall', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You can change the way the testimonials will be displayed', 'stars-testimonials'); ?></span></a></li>
-											<li class="on-screen-pos"><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Collect testimonials', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Collect testimonials from your websites visitors by showing a button under your testimonials widget. Your testimonials will be added once you approve them. You can also create a direct link to your clients so they can submit their testimonials.', 'stars-testimonials'); ?></span></a></li>
-                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Rating Schema support for Google search pages', 'stars-testimonials'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Add rating schema to your WordPress pages where you use Stars Testimonial shortcode. Google search results would show up with the ratings where you have enabled the feature', 'stars-testimonials'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All styles', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('All testimonials templates will be available for you', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('All colors', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You will be able to change the colors of the testimonials components, including using HEX code', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Slider & Wall', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('You can change the way the testimonials will be displayed', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+											<li class="on-screen-pos"><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Collect testimonials', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Collect testimonials from your websites visitors by showing a button under your testimonials widget. Your testimonials will be added once you approve them. You can also create a direct link to your clients so they can submit their testimonials.', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
+                                            <li><a href="javascript:;" class="cus-tooltip"><?php esc_html_e('Rating Schema support for Google search pages', 'stars-testimonials-with-slider-and-masonry-grid'); ?> <span class="has-tooltip">*</span><span class="tooltip__content"><?php esc_html_e('Add rating schema to your WordPress pages where you use Stars Testimonial shortcode. Google search results would show up with the ratings where you have enabled the feature', 'stars-testimonials-with-slider-and-masonry-grid'); ?></span></a></li>
                                         </ul>
                                     </div>
                                     <div class="price-table-bottom">
                                         <div class="custom-dd">
                                             <select class="multiple-options has-multiple-websites">
                                                 <option data-per-month="8.5" data-option="1_year" data-header="Renewals for 25% off" data-price="99" value="<?php echo esc_url($pro_url."28") ?>">
-                                                    <?php esc_html_e("Updates & support for 1 year") ?>
+                                                    <?php esc_html_e("Updates & support for 1 year", 'stars-testimonials-with-slider-and-masonry-grid') ?>
                                                 </option>
                                                 <option data-per-month="6.5" data-option="2_year" data-header="For 2 years" data-price="149" value="<?php echo esc_url($pro_url."29") ?>">
-                                                    <?php esc_html_e("Updates & support for 2 years") ?>
+                                                    <?php esc_html_e("Updates & support for 2 years", 'stars-testimonials-with-slider-and-masonry-grid') ?>
                                                 </option>
                                                 <option data-per-month="" data-option="lifetime" data-header="For lifetime" data-price="249" value="<?php echo esc_url($pro_url."30") ?>">
-                                                    <?php esc_html_e("Updates & support for lifetime") ?>
+                                                    <?php esc_html_e("Updates & support for lifetime", 'stars-testimonials-with-slider-and-masonry-grid') ?>
                                                 </option>
                                             </select>
                                         </div>
-                                        <a class="cart-link" target="_blank" href="<?php echo esc_url($pro_url."28") ?>"><?php esc_html_e('Buy now', 'stars-testimonials'); ?></a>
+                                        <a class="cart-link" target="_blank" href="<?php echo esc_url($pro_url."28") ?>"><?php esc_html_e('Buy now', 'stars-testimonials-with-slider-and-masonry-grid'); ?></a>
                                     </div>
                                     <div class="bottom-position"></div>
                                 </div>
@@ -165,21 +167,21 @@
                 </div>
                 <div class="text-center price-after">
                     <p class="money-guaranteed"><span class="dashicons dashicons-yes"></span>
-                        <?php esc_html_e("30 days money back guaranteed"); ?>
+                        <?php esc_html_e("30 days money back guaranteed", 'stars-testimonials-with-slider-and-masonry-grid'); ?>
                     </p>
                     <p class="money-guaranteed"><span class="dashicons dashicons-yes"></span>
-                        <?php esc_html_e("The plugin will always keep working even if you don't renew your license"); ?>
+                        <?php esc_html_e("The plugin will always keep working even if you don't renew your license", 'stars-testimonials-with-slider-and-masonry-grid'); ?>
                     </p>
                     <div class="payments">
-                        <img src="<?php echo plugins_url('/images/admin/payment.png', __FILE__) ?>" alt="Payment" class="payment-img" />
+                        <img src="<?php echo esc_url( plugins_url('/images/admin/payment.png', __FILE__) ) ?>" alt="<?php echo esc_attr__( 'Payment', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>" class="payment-img" />
                     </div>
                 </div>
                 <div class="folder-testimonial-list">
                     <div class="folder-testimonial">
-                        <div class="testimonial-image"> <img src="<?php echo plugins_url('/images/admin/client-image.jpg', __FILE__) ?>"> </div>
+                        <div class="testimonial-image"> <img src="<?php echo esc_url( plugins_url('/images/admin/client-image.jpg', __FILE__) ) ?>" alt="<?php echo esc_attr__( 'Client image', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>"> </div>
                         <div class="testimonial-data">
-                            <div class="testimonial-desc"><?php esc_html_e('This plugin is used in my website, it is perfect in the All. Support is great, very fast answer & action! Recommendable!', 'stars-testimonials'); ?></div>
-                            <div class="testimonial-author"><?php esc_html_e('- Biljana Bili Wechsler, ', 'stars-testimonials'); ?><small><?php esc_html_e('Bilifotos', 'stars-testimonials'); ?></small></div>
+                            <div class="testimonial-desc"><?php esc_html_e('This plugin is used in my website, it is perfect in the All. Support is great, very fast answer & action! Recommendable!', 'stars-testimonials-with-slider-and-masonry-grid'); ?></div>
+                            <div class="testimonial-author"><?php esc_html_e('- Biljana Bili Wechsler, ', 'stars-testimonials-with-slider-and-masonry-grid'); ?><small><?php esc_html_e('Bilifotos', 'stars-testimonials-with-slider-and-masonry-grid'); ?></small></div>
                         </div>
                     </div>
                 </div>

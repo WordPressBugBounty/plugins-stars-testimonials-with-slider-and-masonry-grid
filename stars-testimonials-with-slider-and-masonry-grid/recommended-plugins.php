@@ -1,14 +1,11 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /**
  * Recommended Plugins
  *
  * @author  : Premio <contact@premio.io>
  * @license : GPL2
- * */
-
-if (defined('ABSPATH') === false) {
-    exit;
-}
+ * */ 
 wp_enqueue_style( 'wp-jquery-ui-dialog' );
 wp_enqueue_script( 'jquery-ui-dialog' );
 // You may comment this out IF you're sure the function exists.
@@ -51,8 +48,8 @@ $args = [
 $data = plugins_api( 'plugin_information', $args );
 if ( $data && ! is_wp_error( $data ) ) {
     $recommendedPlugins['chatway-live-chat'] = $data;
-    $recommendedPlugins['chatway-live-chat']->name = 'Free Live Chat, WordPress Website Chat Plugin, Support Chat App: Chatway';
-    $recommendedPlugins['chatway-live-chat']->short_description = 'Live chat with your website’s visitors through your WordPress website. With Chatway – live chat app, you can do just that and much more!';
+    $recommendedPlugins['chatway-live-chat']->name = __( 'Free Live Chat, WordPress Website Chat Plugin, Support Chat App: Chatway', 'stars-testimonials-with-slider-and-masonry-grid' );
+    $recommendedPlugins['chatway-live-chat']->short_description = __( 'Live chat with your website’s visitors through your WordPress website. With Chatway – live chat app, you can do just that and much more!', 'stars-testimonials-with-slider-and-masonry-grid' );
 }
 
 /* Poptin Plugins */
@@ -67,8 +64,8 @@ $args = [
 $data = plugins_api( 'plugin_information', $args );
 if ( $data && ! is_wp_error( $data ) ) {
     $recommendedPlugins['poptin'] = $data;
-    $recommendedPlugins['poptin']->name = 'Poptin: Beautiful Pop Ups and Embedded Inline Contact Forms for Your Website';
-    $recommendedPlugins['poptin']->short_description = 'Pop ups and contact forms builder for your website. Get more sales, leads, and subscribers with beautiful popups & inline forms templates, no coding skills required';
+    $recommendedPlugins['poptin']->name = __( 'Poptin: Beautiful Pop Ups and Embedded Inline Contact Forms for Your Website', 'stars-testimonials-with-slider-and-masonry-grid' );
+    $recommendedPlugins['poptin']->short_description = __( 'Pop ups and contact forms builder for your website. Get more sales, leads, and subscribers with beautiful popups & inline forms templates, no coding skills required', 'stars-testimonials-with-slider-and-masonry-grid' );
 }
 
 
@@ -84,8 +81,8 @@ $args = [
 $data = plugins_api( 'plugin_information', $args );
 if ( $data && ! is_wp_error( $data ) ) {
     $recommendedPlugins['chaty'] = $data;
-    $recommendedPlugins['chaty']->name = 'Chaty: WhatsApp, Facebook Messenger, and Many Other Chat Buttons For Your Website';
-    $recommendedPlugins['chaty']->short_description = 'Let your visitors contact you via Facebook Messenger, Whatsapp, Telegram, Viber, Email, Phone call, SMS and more with customizable chat & call bututons';
+    $recommendedPlugins['chaty']->name = __( 'Chaty: WhatsApp, Facebook Messenger, and Many Other Chat Buttons For Your Website', 'stars-testimonials-with-slider-and-masonry-grid' );
+    $recommendedPlugins['chaty']->short_description = __( 'Let your visitors contact you via Facebook Messenger, Whatsapp, Telegram, Viber, Email, Phone call, SMS and more with customizable chat & call bututons', 'stars-testimonials-with-slider-and-masonry-grid' );
 }
 
 /* Folders Plugins */
@@ -100,15 +97,15 @@ $args = [
 $data = plugins_api( 'plugin_information', $args );
 if ( $data && ! is_wp_error( $data ) ) {
     $recommendedPlugins['folders'] = $data;
-    $recommendedPlugins['folders']->name = 'Folders: Organize Your Media Library, Posts, Pages, and Custom posts Using Drag and Drop';
-    $recommendedPlugins['folders']->short_description = 'Folders is a powerful WordPress plugin that will help you quickly and easily organize and manage your Media library files, Pages, Posts, and Custom Posts in folders';
+    $recommendedPlugins['folders']->name = __( 'Folders: Organize Your Media Library, Posts, Pages, and Custom posts Using Drag and Drop', 'stars-testimonials-with-slider-and-masonry-grid' );
+    $recommendedPlugins['folders']->short_description = __( 'Folders is a powerful WordPress plugin that will help you quickly and easily organize and manage your Media library files, Pages, Posts, and Custom Posts in folders', 'stars-testimonials-with-slider-and-masonry-grid' );
 }
 ?>
 <div class="wrap mystickyelement-wrap recommended-plugins">
 	<h2>
-		<?php _e('Try out our recommended plugins', 'mystickyelements'); ?>
+        <?php esc_html_e('Try out our recommended plugins', 'stars-testimonials-with-slider-and-masonry-grid'); ?>
 		<div class="mystickyelement-contact-form-leads-btn">
-			<a href="#" class="create-rule recommeded-plugins-hide"><?php _e('Hide From Menu', 'mystickyelements');?></a>
+            <a href="#" class="create-rule recommeded-plugins-hide"><?php esc_html_e('Hide From Menu', 'stars-testimonials-with-slider-and-masonry-grid');?></a>
 		</div>
 	</h2>
 </div>
@@ -154,9 +151,11 @@ if ( $data && ! is_wp_error( $data ) ) {
                 $name = wp_strip_all_tags($title.' '.$version);
 
                 $author = wp_kses($plugin['author'], $pluginsAllowedTags);
-                if (! empty($author)) {
-                    // translators: %s: Plugin author.
-                    $author = ' <cite>'.sprintf(esc_html__( 'By %s', "chaty"), $author).'</cite>';
+                if (! empty($author)) { 
+                    $author = ' <cite>'.sprintf(
+                        /* translators: 1: plugin author. */
+                        esc_html__( 'By %s', 'stars-testimonials-with-slider-and-masonry-grid' ), $author)
+                        .'</cite>';
                 }
 
                 $requires_php = isset($plugin['requires_php']) ? $plugin['requires_php'] : null;
@@ -176,18 +175,20 @@ if ( $data && ! is_wp_error( $data ) ) {
                             if ($status['url']) {
                                 if ($compatible_php && $compatible_wp) {
                                     $action_links[] = sprintf(
+                                        /* translators: %s: Plugin name and version. */
                                         '<a class="install-now button" data-slug="%s" href="%s" aria-label="%s" data-name="%s">%s</a>',
                                         esc_attr($plugin['slug']),
                                         esc_url($status['url']),
                                         // translators: %s: Plugin name and version.
-                                        esc_attr(sprintf(esc_html__('Install %s now', 'folders'), $name)),
+                                        esc_attr(sprintf(esc_html__('Install %s now', 'stars-testimonials-with-slider-and-masonry-grid'), $name)),
                                         esc_attr($name),
-                                        esc_html__( 'Install Now', "chaty")
+                                        esc_html__( 'Install Now', 'stars-testimonials-with-slider-and-masonry-grid' )
                                     );
                                 } else {
                                     $action_links[] = sprintf(
+                                        // translators: %s: button text.
                                         '<button type="button" class="button button-disabled" disabled="disabled">%s</button>',
-                                        esc_html__('Cannot Install', 'folders')
+                                        esc_html__('Cannot Install', 'stars-testimonials-with-slider-and-masonry-grid')
                                     );
                                 }
                             }
@@ -197,19 +198,21 @@ if ( $data && ! is_wp_error( $data ) ) {
                             if ($status['url']) {
                                 if ($compatible_php && $compatible_wp) {
                                     $action_links[] = sprintf(
+                                        /* translators: %s: Plugin name and version. */
                                         '<a class="update-now button aria-button-if-js" data-plugin="%s" data-slug="%s" href="%s" aria-label="%s" data-name="%s">%s</a>',
                                         esc_attr($status['file']),
                                         esc_attr($plugin['slug']),
                                         esc_url($status['url']),
                                         // translators: %s: Plugin name and version.
-                                        esc_attr(sprintf(esc_html__('Update %s now', 'folders'), $name)),
+                                        esc_attr(sprintf(esc_html__('Update %s now', 'stars-testimonials-with-slider-and-masonry-grid'), $name)),
                                         esc_attr($name),
-                                        esc_html__( 'Update Now', "chaty")
+                                        esc_html__( 'Update Now', 'stars-testimonials-with-slider-and-masonry-grid' )
                                     );
                                 } else {
                                     $action_links[] = sprintf(
+                                        // translators: %s: button text.
                                         '<button type="button" class="button button-disabled" disabled="disabled">%s</button>',
-                                        esc_html__('Cannot Update', 'folders')
+                                        esc_html__('Cannot Update', 'stars-testimonials-with-slider-and-masonry-grid')
                                     );
                                 }
                             }
@@ -219,13 +222,14 @@ if ( $data && ! is_wp_error( $data ) ) {
                         case 'newer_installed':
                             if (is_plugin_active($status['file'])) {
                                 $action_links[] = sprintf(
+                                    // translators: %s: button text.
                                     '<button type="button" class="button button-disabled" disabled="disabled">%s</button>',
-                                    esc_html__('Active', 'folders')
+                                    esc_html__('Active', 'stars-testimonials-with-slider-and-masonry-grid')
                                 );
                             } else if (current_user_can('activate_plugin', $status['file'])) {
-                                $button_text = esc_html__( 'Activate', "chaty");
+                                $button_text = esc_html__( 'Activate', 'stars-testimonials-with-slider-and-masonry-grid' );
                                 // translators: %s: Plugin name.
-                                $button_label = esc_html__('Activate %s', 'folders');
+                                $button_label = esc_html__('Activate %s', 'stars-testimonials-with-slider-and-masonry-grid');
                                 $activate_url = add_query_arg(
                                     [
                                         '_wpnonce' => wp_create_nonce('activate-plugin_'.$status['file']),
@@ -236,13 +240,14 @@ if ( $data && ! is_wp_error( $data ) ) {
                                 );
 
                                 if (is_network_admin()) {
-                                    $button_text = esc_html__( 'Network Activate', "chaty");
+                                    $button_text = esc_html__( 'Network Activate', 'stars-testimonials-with-slider-and-masonry-grid' );
                                     // translators: %s: Plugin name.
-                                    $button_label = esc_html__('Network Activate %s', 'folders');
+                                    $button_label = esc_html__('Network Activate %s', 'stars-testimonials-with-slider-and-masonry-grid');
                                     $activate_url = add_query_arg([ 'networkwide' => 1 ], $activate_url);
                                 }
 
                                 $action_links[] = sprintf(
+                                    // translators: 1: Activate URL, 2: aria-label, 3: button text.
                                     '<a href="%1$s" class="button activate-now" aria-label="%2$s">%3$s</a>',
                                     esc_url($activate_url),
                                     esc_attr(sprintf($button_label, $plugin['name'])),
@@ -250,8 +255,9 @@ if ( $data && ! is_wp_error( $data ) ) {
                                 );
                             } else {
                                 $action_links[] = sprintf(
+                                    // translators: %s: button text.
                                     '<button type="button" class="button button-disabled" disabled="disabled">%s</button>',
-                                    esc_html__('Installed', 'folders')
+                                    esc_html__('Installed', 'stars-testimonials-with-slider-and-masonry-grid')
                                 );
                             }//end if
                             break;
@@ -263,12 +269,13 @@ if ( $data && ! is_wp_error( $data ) ) {
                 );
 
                 $action_links[] = sprintf(
+                    // translators: 1: Details link, 2: aria-label, 3: data-title, 4: link text.
                     '<a href="%s" class="thickbox open-plugin-details-modal" aria-label="%s" data-title="%s">%s</a>',
                     esc_url($details_link),
                     // translators: %s: Plugin name and version.
-                    esc_attr(sprintf(esc_html__( 'More information about %s', "chaty"), $name)),
+                                    esc_attr(sprintf(esc_html__( 'More information about %s', 'stars-testimonials-with-slider-and-masonry-grid' ), $name)),
                     esc_attr($name),
-                    esc_html__( 'More Details', "chaty")
+                    esc_html__( 'More Details', 'stars-testimonials-with-slider-and-masonry-grid' )
                 );
 
                 if (! empty($plugin['icons']['svg'])) {
@@ -298,11 +305,11 @@ if ( $data && ! is_wp_error( $data ) ) {
                     if (! $compatible_php || ! $compatible_wp) {
                         echo '<div class="notice inline notice-error notice-alt"><p>';
                         if (! $compatible_php && ! $compatible_wp) {
-                            esc_html_e('This plugin doesn&#8217;t work with your versions of WordPress and PHP.');
+                            esc_html_e('This plugin doesn&#8217;t work with your versions of WordPress and PHP.', 'stars-testimonials-with-slider-and-masonry-grid' );
                             if (current_user_can('update_core') && current_user_can('update_php')) {
                                 printf(
                                 // translators: 1: URL to WordPress Updates screen, 2: URL to Update PHP page.
-                                    ' '.esc_html__( '<a href="%1$s">Please update WordPress</a>, and then <a href="%2$s">learn more about updating PHP</a>.', "chaty"),
+                                    ' '.esc_html__( '<a href="%1$s">Please update WordPress</a>, and then <a href="%2$s">learn more about updating PHP</a>.', 'stars-testimonials-with-slider-and-masonry-grid' ),
                                     esc_url(self_admin_url('update-core.php')),
                                     esc_url(wp_get_update_php_url())
                                 );
@@ -310,32 +317,32 @@ if ( $data && ! is_wp_error( $data ) ) {
                             } else if (current_user_can('update_core')) {
                                 printf(
                                 // translators: %s: URL to WordPress Updates screen.
-                                    ' '.esc_html__( '<a href="%s">Please update WordPress</a>.', "chaty"),
+                                    ' '.esc_html__( '<a href="%s">Please update WordPress</a>.', 'stars-testimonials-with-slider-and-masonry-grid' ),
                                     esc_url(self_admin_url('update-core.php'))
                                 );
                             } else if (current_user_can('update_php')) {
                                 printf(
                                 // translators: %s: URL to Update PHP page.
-                                    ' '.esc_html__( '<a href="%s">Learn more about updating PHP</a>.', "chaty"),
+                                    ' '.esc_html__( '<a href="%s">Learn more about updating PHP</a>.', 'stars-testimonials-with-slider-and-masonry-grid' ),
                                     esc_url(wp_get_update_php_url())
                                 );
                                 wp_update_php_annotation('</p><p><em>', '</em>');
                             }//end if
                         } else if (! $compatible_wp) {
-                            esc_html_e('This plugin doesn&#8217;t work with your version of WordPress.', "chaty");
+                            esc_html_e('This plugin doesn&#8217;t work with your version of WordPress.', 'stars-testimonials-with-slider-and-masonry-grid' );
                             if (current_user_can('update_core')) {
                                 printf(
                                 // translators: %s: URL to WordPress Updates screen.
-                                    ' '.esc_html__( '<a href="%s">Please update WordPress</a>.', "chaty"),
+                                    ' '.esc_html__( '<a href="%s">Please update WordPress</a>.', 'stars-testimonials-with-slider-and-masonry-grid' ),
                                     esc_url(self_admin_url('update-core.php'))
                                 );
                             }
                         } else if (! $compatible_php) {
-                            esc_html_e('This plugin doesn&#8217;t work with your version of PHP.');
+                            esc_html_e('This plugin doesn&#8217;t work with your version of PHP.', 'stars-testimonials-with-slider-and-masonry-grid' );
                             if (current_user_can('update_php')) {
                                 printf(
                                 // translators: %s: URL to Update PHP page.
-                                    ' '.esc_html__( '<a href="%s">Learn more about updating PHP</a>.', "chaty"),
+                                    ' '.esc_html__( '<a href="%s">Learn more about updating PHP</a>.', 'stars-testimonials-with-slider-and-masonry-grid' ),
                                     esc_url(wp_get_update_php_url())
                                 );
                                 wp_update_php_annotation('</p><p><em>', '</em>');
@@ -357,7 +364,8 @@ if ( $data && ! is_wp_error( $data ) ) {
                         <div class="action-links">
                             <?php
                             if ($action_links) {
-                                echo '<ul class="plugin-action-buttons"><li>'.implode('</li><li>', $action_links).'</li></ul>';
+                                $escaped_links = array_map('wp_kses_post', $action_links);
+                                echo '<ul class="plugin-action-buttons"><li>'.implode('</li><li>', $escaped_links).'</li></ul>';
                             }
                             ?>
                         </div>
@@ -380,10 +388,10 @@ if ( $data && ! is_wp_error( $data ) ) {
                             <span class="num-ratings" aria-hidden="true">(<?php echo esc_attr(number_format_i18n($plugin['num_ratings'])); ?>)</span>
                         </div>
                         <div class="column-updated">
-                            <strong><?php esc_html_e('Last Updated:', "chaty"); ?></strong>
+                            <strong><?php esc_html_e('Last Updated:', 'stars-testimonials-with-slider-and-masonry-grid' ); ?></strong>
                             <?php
                             // translators: %s: Human-readable time difference.
-                            printf(esc_html__( '%s ago', "chaty"), esc_attr(human_time_diff($last_updated_timestamp)));
+                            printf(esc_html__( '%s ago', 'stars-testimonials-with-slider-and-masonry-grid' ), esc_attr(human_time_diff($last_updated_timestamp)));
                             ?>
                         </div>
                         <div class="column-downloaded">
@@ -392,23 +400,23 @@ if ( $data && ! is_wp_error( $data ) ) {
                                 $active_installs_millions = floor(($plugin['active_installs'] / 1000000));
                                 $active_installs_text     = sprintf(
                                 // translators: %s: Number of millions.
-                                    _nx('%s+ Million', '%s+ Million', $active_installs_millions, 'Active plugin installations'),
+                                    _nx('%s+ Million', '%s+ Million', $active_installs_millions, 'Active plugin installations', 'stars-testimonials-with-slider-and-masonry-grid' ),
                                     number_format_i18n($active_installs_millions)
                                 );
                             } else if (0 == $plugin['active_installs']) {
-                                $active_installs_text = esc_html__('Less Than 10', 'folders');
+                                $active_installs_text = esc_html__('Less Than 10', 'stars-testimonials-with-slider-and-masonry-grid');
                             } else {
                                 $active_installs_text = number_format_i18n($plugin['active_installs']).'+';
                             }
 
                             // translators: %s: Number of installations.
-                            printf(esc_html__( '%s Active Installations', "chaty"), esc_attr($active_installs_text));
+                            printf(esc_html__( '%s Active Installations', 'stars-testimonials-with-slider-and-masonry-grid' ), esc_attr($active_installs_text));
                             ?>
                         </div>
                         <div class="column-compatibility">
                             <?php
                             if (! $tested_wp) {
-                                echo '<span class="compatibility-untested">'.esc_html__( 'Untested with your version of WordPress', "chaty").'</span>';
+                                echo '<span class="compatibility-untested">'.esc_html__( 'Untested with your version of WordPress', 'stars-testimonials-with-slider-and-masonry-grid' ).'</span>';
                             } else if (! $compatible_wp) {
                                 echo '<span class="compatibility-incompatible">'.wp_kses( '<strong>Incompatible</strong> with your version of WordPress', $pluginsAllowedTags).'</span>';
                             } else {
@@ -423,8 +431,8 @@ if ( $data && ! is_wp_error( $data ) ) {
             ?>
         </div>
     </div>
-    <div id="hide-recommeded-plugins" style="display:none;" title="<?php esc_html_e('Are you sure?', 'folders');?>">
-        <p><?php esc_html_e("If you hide the recommended plugins page from your menu, it won't appear there again. Are you sure you'd like to do it?", 'folders');?></p>
+    <div id="hide-recommeded-plugins" style="display:none;" title="<?php esc_html_e('Are you sure?', 'stars-testimonials-with-slider-and-masonry-grid');?>">
+        <p><?php esc_html_e("If you hide the recommended plugins page from your menu, it won't appear there again. Are you sure you'd like to do it?", 'stars-testimonials-with-slider-and-masonry-grid');?></p>
     </div>
 
 </div>
@@ -491,16 +499,16 @@ a.create-rule {
 				buttons: {
 					"Hide it": {
 						click: function () {
-							window.location = "<?php echo admin_url('edit.php?post_type=stars_testimonial&hide_testirecommended_plugin=1');?>";
+                            window.location = "<?php echo esc_url( admin_url('edit.php')).'?post_type=stars_testimonial&hide_testirecommended_plugin=1';?>";
 						},
-						text: 'Hide it',
+                        text: '<?php echo esc_html__( 'Hide it', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>',
 						class: 'btn red-btn'
 					},
 					"Keep it": {
 						click: function () {
 							$(this).dialog('close');
 						},
-						text: 'Keep it',
+                        text: '<?php echo esc_html__( 'Keep it', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>',
 						class: 'btn alt gray-btn'
 					},
 				}

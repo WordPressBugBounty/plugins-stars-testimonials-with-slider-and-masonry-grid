@@ -61,26 +61,12 @@ final class Stars_Testimonials_Elementor {
      * @since 1.0.0
      * @access public
      */
-    public function __construct() {
-        // Load the translation.
-        add_action( 'init', array( $this, 'i18n' ) );
+    public function __construct() { 
 
         // Initialize the plugin.
         add_action( 'plugins_loaded', array( $this, 'init' ) );
     }
-
-    /**
-     * Load Textdomain
-     *
-     * Load plugin localization files.
-     * Fired by `init` action hook.
-     *
-     * @since 1.0.0
-     * @access public
-     */
-    public function i18n() {
-        load_plugin_textdomain( 'elementor-awesomesauce' );
-    }
+ 
 
     /**
      * Initialize the plugin

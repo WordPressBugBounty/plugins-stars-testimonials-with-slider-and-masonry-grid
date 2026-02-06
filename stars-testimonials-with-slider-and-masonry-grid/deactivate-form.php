@@ -117,27 +117,27 @@
         <!-- form start -->
         <form action="#" method="post" id="star-test-deactivate-form">
             <div class="star-test-popup-header">
-                <h2><?php esc_html_e('Quick feedback about Stars Testimonials', 'stars-testimonials'); ?> 🙏</h2>
+                <h2><?php esc_html_e('Quick feedback about Stars Testimonials', 'stars-testimonials-with-slider-and-masonry-grid'); ?> 🙏</h2>
             </div>
             <div class="star-test-popup-body">
-                <h3><?php esc_html_e('Your feedback will help us improve the product, please tell us why did you decide to deactivate Stars Testimonials :)', 'stars-testimonials'); ?></h3>
+                <h3><?php esc_html_e('Your feedback will help us improve the product, please tell us why did you decide to deactivate Stars Testimonials :)', 'stars-testimonials-with-slider-and-masonry-grid'); ?></h3>
                 <div class="form-control">
-                    <input type="email" value="<?php echo get_option( 'admin_email' ) ?>" placeholder="<?php echo _e("Email address", 'stars-testimonials') ?>" id="star-test-deactivation-email_id">
+                    <input type="email" value="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" placeholder="<?php echo esc_attr__( 'Email address', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>" id="star-test-deactivation-email_id">
                 </div>
                 <div class="form-control">
                     <label></label>
-                    <textarea placeholder="<?php esc_html_e("Your comment", 'stars-testimonials') ?>" id="star-test-deactivation-comment"></textarea>
+                    <textarea placeholder="<?php echo esc_attr__( 'Your comment', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>" id="star-test-deactivation-comment"></textarea>
                 </div>
             </div>
             <div class="star-test-popup-footer">
                 <label class="star-test-anonymous">
-                    <input type="checkbox"/><?php esc_html_e('Anonymous feedback', 'stars-testimonials'); ?>
+                    <input type="checkbox"/><?php esc_html_e('Anonymous feedback', 'stars-testimonials-with-slider-and-masonry-grid'); ?>
                 </label>
-                <input type="button" class="button button-secondary button-skip star-test-popup-skip-feedback" value="Skip &amp; Deactivate">
+                <input type="button" class="button button-secondary button-skip star-test-popup-skip-feedback" value="<?php echo esc_attr__( 'Skip & Deactivate', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>">
                 <div class="action-btns">
                     <span class="star-test-spinner"><img src="<?php echo esc_url(admin_url('/images/spinner.gif')); ?>" alt=""></span>
-                    <input type="submit" class="button button-secondary button-deactivate star-test-popup-allow-deactivate" value="Submit &amp; Deactivate" disabled="disabled">
-                    <a href="#" class="button button-primary star-test-popup-button-close"><?php esc_html_e('Cancel', 'stars-testimonials'); ?></a>
+                    <input type="submit" class="button button-secondary button-deactivate star-test-popup-allow-deactivate" value="<?php echo esc_attr__( 'Submit & Deactivate', 'stars-testimonials-with-slider-and-masonry-grid' ); ?>" disabled="disabled">
+                    <a href="#" class="button button-primary star-test-popup-button-close"><?php esc_html_e('Cancel', 'stars-testimonials-with-slider-and-masonry-grid'); ?></a>
                 </div>
             </div>
         </form>
@@ -207,7 +207,7 @@
                 }).done(function () {
                     $(".star-test-spinner").hide();
                     $(".star-test-popup-allow-deactivate").removeAttr("disabled");
-                    window.location.href = $("tr[data-slug='" + starTestPluginSlug + "'] .deactivate a").attr('href');
+                    // window.location.href = $("tr[data-slug='" + starTestPluginSlug + "'] .deactivate a").attr('href');
                 });
             });
             $('.star-test-popup-skip-feedback').on('click', function (e) {

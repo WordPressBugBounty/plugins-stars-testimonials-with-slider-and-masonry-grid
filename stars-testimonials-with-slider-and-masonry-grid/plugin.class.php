@@ -75,11 +75,16 @@ class Stars_Testimonials
 
     function check_for_signup_status() {
         if(!defined("DOING_AJAX")) {
-            $stars_testimonial = (isset($_GET['post_type']) && $_GET['post_type'] == "stars_testimonial")?true:false;
-            if($stars_testimonial && (!isset($_GET['task']) || $_GET['task'] != "mailjet")) {
+            $post_type = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET  ['post_type'] ) ) : '';
+
+            $task = isset( $_GET['task'] ) ? sanitize_key( wp_unslash( $_GET['task'] ) ) : '';
+
+            $stars_testimonial = ( $post_type === 'stars_testimonial' );
+
+            if ( $stars_testimonial && $task !== 'mailjet' ) {
                 $is_shown = get_option("stars_testimonials_update_message");
                 if ($is_shown === false) {
-                    wp_redirect("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=mailjet");
+                    wp_safe_redirect(admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=mailjet"));
                     exit;
                 }
             }
@@ -96,7 +101,7 @@ class Stars_Testimonials
     }
 
     public function stars_testimonials_update_status() {
-        if(!empty($_REQUEST['nonce']) && wp_verify_nonce($_REQUEST['nonce'], 'stars_testimonials_update_status')) {
+        if(!empty($_REQUEST['nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['nonce'])), 'stars_testimonials_update_status')) {
             $status = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
             $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
             update_option("stars_testimonials_update_message", 2);
@@ -135,223 +140,235 @@ class Stars_Testimonials
     /* star_testimonials_plugin_deactivate start */
     public function star_testimonials_plugin_deactivate()
     {
-        if (current_user_can('manage_options')) {
-            $postData = $_POST;
-            $errorCounter = 0;
-            $response = array();
-            $response['status'] = 0;
-            $response['message'] = "";
-            $response['valid'] = 1;
-            $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING);
-            $nonce = filter_input(INPUT_POST, 'nonce', FILTER_SANITIZE_STRING);
-            if (empty($reason)) {
-                $errorCounter++;
-                $response['message'] = "Please provide reason";
-            } else if (empty($nonce)) {
-                $response['message'] = esc_attr__("Your request is not valid", CHT_OPT);
-                $errorCounter++;
-                $response['valid'] = 0;
-            } else {
-                if (!wp_verify_nonce($nonce, 'star_testimonials_deactivate_nonce')) {
-                    $response['message'] = esc_attr__("Your request is not valid", CHT_OPT);
-                    $errorCounter++;
-                    $response['valid'] = 0;
-                }
-            }
-            if ($errorCounter == 0) {
-                global $current_user;
-                $email = "none@none.none";
-                if (isset($postData['email_id']) && !empty($postData['email_id']) && filter_var($postData['email_id'], FILTER_VALIDATE_EMAIL)) {
-                    $email = $postData['email_id'];
-                }
-                $domain = site_url();
-                $user_name = $current_user->first_name . " " . $current_user->last_name;
-
-	            $response['status'] = 1;
-
-	            /* sending message to Crisp */
-	            $post_message = array();
-
-	            $message_data = array();
-	            $message_data['key'] = "Plugin";
-	            $message_data['value'] = "Stars testimonials";
-	            $post_message[] = $message_data;
-
-	            $message_data = array();
-	            $message_data['key'] = "Plugin Version";
-	            $message_data['value'] = PREMIO_TESTIMONIAL_PLUGIN_VERSION;
-	            $post_message[] = $message_data;
-
-	            $message_data = array();
-	            $message_data['key'] = "Domain";
-	            $message_data['value'] = $domain;
-	            $post_message[] = $message_data;
-
-	            $message_data = array();
-	            $message_data['key'] = "Email";
-	            $message_data['value'] = $email;
-	            $post_message[] = $message_data;
-
-	            $message_data = array();
-	            $message_data['key'] = "WordPress Version";
-	            $message_data['value'] = esc_attr(get_bloginfo('version'));
-	            $post_message[] = $message_data;
-
-	            $message_data = array();
-	            $message_data['key'] = "PHP Version";
-	            $message_data['value'] = PHP_VERSION;
-	            $post_message[] = $message_data;
-
-	            $message_data = array();
-	            $message_data['key'] = "Message";
-	            $message_data['value'] = $reason;
-	            $post_message[] = $message_data;
-
-	            $api_params = array(
-		            'domain' => $domain,
-		            'email' => $email,
-		            'url' => site_url(),
-		            'name' => $user_name,
-		            'message' => $post_message,
-		            'plugin' => "Stars testimonials",
-		            'type' => "Uninstall",
-	            );
-
-	            /* Sending message to Crisp API */
-	            $crisp_response = wp_safe_remote_post("https://go.premio.io/crisp/crisp-send-message.php", array('body' => $api_params, 'timeout' => 15, 'sslverify' => true));
-
-	            if (is_wp_error($crisp_response)) {
-		            wp_safe_remote_post("https://go.premio.io/crisp/crisp-send-message.php", array('body' => $api_params, 'timeout' => 15, 'sslverify' => false));
-	            }
-            }
-            echo json_encode($response);
+        if (!current_user_can('manage_options')) {
             wp_die();
         }
+
+        $response = array();
+        $response['status'] = 0;
+        $response['message'] = "";
+        $response['valid'] = 1;
+        
+        $reason = filter_input(INPUT_POST, 'reason', FILTER_SANITIZE_STRING);
+        $nonce = filter_input(INPUT_POST, 'nonce', FILTER_SANITIZE_STRING);
+
+        // Validate nonce - fail early if missing or invalid
+        if (empty($nonce) || !wp_verify_nonce(sanitize_text_field(wp_unslash($nonce)), 'star_testimonials_deactivate_nonce')) {
+            $response['message'] = __( 'Your request is not valid', 'stars-testimonials-with-slider-and-masonry-grid' );
+            $response['valid'] = 0;
+            echo wp_json_encode($response);
+            wp_die();
+        }
+
+        // Validate reason after nonce
+        if (empty($reason)) {
+            $response['message'] = __( 'Please provide reason', 'stars-testimonials-with-slider-and-masonry-grid' );
+            echo wp_json_encode($response);
+            wp_die();
+        } 
+        // All validations passed, proceed with deactivation feedback
+        global $current_user;
+        $email = "none@none.none";
+        $email_id = filter_input(INPUT_POST, 'email_id', FILTER_SANITIZE_EMAIL);
+        if (!empty($email_id) && is_email($email_id)) {
+            $email = $email_id;
+        }
+        $domain = site_url();
+        $user_name = $current_user->first_name . " " . $current_user->last_name;
+
+        $response['status'] = 1;
+
+        /* sending message to Crisp */
+        $post_message = array();
+
+        $message_data = array();
+        $message_data['key'] = "Plugin";
+        $message_data['value'] = "Stars testimonials";
+        $post_message[] = $message_data;
+
+        $message_data = array();
+        $message_data['key'] = "Plugin Version";
+        $message_data['value'] = PREMIO_TESTIMONIAL_PLUGIN_VERSION;
+        $post_message[] = $message_data;
+
+        $message_data = array();
+        $message_data['key'] = "Domain";
+        $message_data['value'] = $domain;
+        $post_message[] = $message_data;
+
+        $message_data = array();
+        $message_data['key'] = "Email";
+        $message_data['value'] = $email;
+        $post_message[] = $message_data;
+
+        $message_data = array();
+        $message_data['key'] = "WordPress Version";
+        $message_data['value'] = esc_attr(get_bloginfo('version'));
+        $post_message[] = $message_data;
+
+        $message_data = array();
+        $message_data['key'] = "PHP Version";
+        $message_data['value'] = PHP_VERSION;
+        $post_message[] = $message_data;
+
+        $message_data = array();
+        $message_data['key'] = "Message";
+        $message_data['value'] = $reason;
+        $post_message[] = $message_data;
+
+        $api_params = array(
+            'domain' => $domain,
+            'email' => $email,
+            'url' => site_url(),
+            'name' => $user_name,
+            'message' => $post_message,
+            'plugin' => "Stars testimonials",
+            'type' => "Uninstall",
+        );
+
+        /* Sending message to Crisp API */
+        $crisp_response = wp_safe_remote_post("https://go.premio.io/crisp/crisp-send-message.php", array('body' => $api_params, 'timeout' => 15, 'sslverify' => true));
+
+        if (is_wp_error($crisp_response)) {
+            wp_safe_remote_post("https://go.premio.io/crisp/crisp-send-message.php", array('body' => $api_params, 'timeout' => 15, 'sslverify' => false));
+        }
+
+        echo wp_json_encode($response);
+        wp_die();
     }
 
     public function save_premio_testimonial_post() {
-        if (current_user_can('edit_posts')) {
-            $response = array();
-            $response['status'] = 0;
-            $nonce = filter_input(INPUT_POST, 'nonce', FILTER_SANITIZE_STRING);
-            if (!wp_verify_nonce($nonce, 'add_premio_testimonial_post')) {
-                $response['message'] = "";
-            } else {
-                $post_title = filter_input(INPUT_POST, 'post_title', FILTER_SANITIZE_STRING);
-                $testimonial_content = filter_input(INPUT_POST, 'testimonial_content');
-                $company_name = filter_input(INPUT_POST, 'company_name', FILTER_SANITIZE_STRING);
-                $website_link = filter_input(INPUT_POST, 'website_link', FILTER_SANITIZE_STRING);
-                $client_image = filter_input(INPUT_POST, 'client_image', FILTER_SANITIZE_STRING);
-                $testimonial_stars = filter_input(INPUT_POST, 'testimonial_stars', FILTER_SANITIZE_STRING);
-                $testimonial_categories = isset($_REQUEST['testimonial_categories']) ? $_REQUEST['testimonial_categories'] : array();
-                $user_id = get_current_user_id();
-
-                if (empty($testimonial_categories) || !is_array($testimonial_categories)) {
-                    $testimonial_categories = array();
-                }
-
-                if (!is_array($testimonial_categories)) {
-                    $testimonial_categories = array();
-                }
-                $post_data = array(
-                    'post_title' => $post_title,
-                    'post_content' => $testimonial_content,
-                    'post_status' => 'publish',
-                    'post_author' => $user_id,
-                    'post_category' => array(),
-                    'post_type' => 'stars_testimonial'
-                );
-
-                // Lets insert the post now.
-                $post_id = wp_insert_post($post_data);
-                if (!empty($post_id)) {
-                    if (!empty($testimonial_categories)) {
-                        wp_set_post_terms($post_id, $testimonial_categories, 'stars_testimonial_cat', false);
-                    }
-
-                    add_post_meta($post_id, 'testimonial_company_name', $company_name);
-                    add_post_meta($post_id, 'testimonial_company_url', $website_link);
-                    add_post_meta($post_id, 'testimonial_stars', $testimonial_stars);
-                    if (!empty($client_image)) {
-                        set_post_thumbnail($post_id, $client_image);
-                    }
-                    $response['status'] = 1;
-                }
-            }
-            echo json_encode($response);
-            exit;
+        if (!current_user_can('edit_posts')) {
+            wp_die();
         }
+
+        $response = array();
+        $response['status'] = 0;
+        $nonce = filter_input(INPUT_POST, 'nonce', FILTER_SANITIZE_STRING);
+
+        // Validate nonce - fail early if missing or invalid
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($nonce)), 'add_premio_testimonial_post')) {
+            $response['message'] = __("Your request is not valid", 'stars-testimonials-with-slider-and-masonry-grid');
+            echo wp_json_encode($response);
+            wp_die();
+        }
+        // All validations passed, proceed with saving
+        $post_title = filter_input(INPUT_POST, 'post_title', FILTER_SANITIZE_STRING);
+        $testimonial_content = wp_kses_post(wp_unslash($_POST['testimonial_content'] ?? ''));
+        $company_name = filter_input(INPUT_POST, 'company_name', FILTER_SANITIZE_STRING);
+        $website_link = filter_input(INPUT_POST, 'website_link', FILTER_SANITIZE_STRING);
+        $client_image = filter_input(INPUT_POST, 'client_image', FILTER_SANITIZE_STRING);
+        $testimonial_stars = filter_input(INPUT_POST, 'testimonial_stars', FILTER_SANITIZE_STRING);
+        $testimonial_categories = isset($_REQUEST['testimonial_categories']) ? array_map('intval', (array)$_REQUEST['testimonial_categories']) : array();
+        $user_id = get_current_user_id();
+
+        if (!empty($testimonial_categories) && is_array($testimonial_categories)) {
+            $testimonial_categories = array_map('intval', $testimonial_categories);
+        } else {
+            $testimonial_categories = array();
+        }
+        $post_data = array(
+            'post_title' => $post_title,
+            'post_content' => $testimonial_content,
+            'post_status' => 'publish',
+            'post_author' => $user_id,
+            'post_category' => array(),
+            'post_type' => 'stars_testimonial'
+        );
+
+        // Lets insert the post now.
+        $post_id = wp_insert_post($post_data);
+        if (!empty($post_id)) {
+            if (!empty($testimonial_categories)) {
+                wp_set_post_terms($post_id, $testimonial_categories, 'stars_testimonial_cat', false);
+            }
+
+            add_post_meta($post_id, 'testimonial_company_name', $company_name);
+            add_post_meta($post_id, 'testimonial_company_url', $website_link);
+            add_post_meta($post_id, 'testimonial_stars', $testimonial_stars);
+            if (!empty($client_image)) {
+                set_post_thumbnail($post_id, $client_image);
+            }
+            $response['status'] = 1;
+        }
+
+        echo wp_json_encode($response);
+        wp_die();
     }
 
     public function update_premio_testimonial_post() {
-        if (current_user_can('edit_posts')) {
-            $response = array();
-            $response['status'] = 0;
-            $nonce = filter_input(INPUT_POST, 'nonce', FILTER_SANITIZE_STRING);
-            $post_id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_STRING);
-            if (!wp_verify_nonce($nonce, 'update_premio_testimonial_post_' . $post_id)) {
-                $response['message'] = "Invalid request";
-            } else {
-                $post_title = filter_input(INPUT_POST, 'post_title', FILTER_SANITIZE_STRING);
-                $testimonial_content = filter_input(INPUT_POST, 'testimonial_content');
-                $company_name = filter_input(INPUT_POST, 'company_name', FILTER_SANITIZE_STRING);
-                $website_link = filter_input(INPUT_POST, 'website_link', FILTER_SANITIZE_STRING);
-                $client_image = filter_input(INPUT_POST, 'client_image', FILTER_SANITIZE_STRING);
-                $testimonial_stars = filter_input(INPUT_POST, 'testimonial_stars', FILTER_SANITIZE_STRING);
-                $testimonial_categories = isset($_REQUEST['testimonial_categories']) ? $_REQUEST['testimonial_categories'] : array();
-                $user_id = get_current_user_id();
-
-                if (empty($testimonial_categories) || !is_array($testimonial_categories)) {
-                    $testimonial_categories = array();
-                }
-
-                if (!is_array($testimonial_categories)) {
-                    $testimonial_categories = array();
-                }
-                $post_data = array(
-                    'ID' => $post_id,
-                    'post_title' => $post_title,
-                    'post_content' => $testimonial_content,
-                    'post_status' => 'publish',
-                );
-
-                // Lets insert the post now.
-                $post_id = wp_update_post($post_data);
-                if (!empty($post_id)) {
-                    if (!empty($testimonial_categories)) {
-                        wp_set_post_terms($post_id, $testimonial_categories, 'stars_testimonial_cat', false);
-                    }
-
-                    update_post_meta($post_id, 'testimonial_company_name', $company_name);
-                    update_post_meta($post_id, 'testimonial_company_url', $website_link);
-                    update_post_meta($post_id, 'testimonial_stars', $testimonial_stars);
-                    if (!empty($client_image)) {
-                        set_post_thumbnail($post_id, $client_image);
-                    } else {
-                        delete_post_thumbnail($post_id);
-                    }
-                    $response['status'] = 1;
-                }
-            }
-            echo json_encode($response);
-            exit;
+        if (!current_user_can('edit_posts')) {
+            wp_die();
         }
+
+        $response = array();
+        $response['status'] = 0;
+        $post_id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_STRING);
+        $nonce = filter_input(INPUT_POST, 'nonce', FILTER_SANITIZE_STRING);
+
+        // Validate nonce - fail early if missing or invalid
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($nonce)), 'update_premio_testimonial_post_' . $post_id)) {
+            $response['message'] = __("Your request is not valid", 'stars-testimonials-with-slider-and-masonry-grid');
+            echo wp_json_encode($response);
+            wp_die();
+        }
+        $post_title = filter_input(INPUT_POST, 'post_title', FILTER_SANITIZE_STRING);
+        $testimonial_content = wp_kses_post(wp_unslash($_POST['testimonial_content'] ?? ''));
+        $company_name = filter_input(INPUT_POST, 'company_name', FILTER_SANITIZE_STRING);
+        $website_link = filter_input(INPUT_POST, 'website_link', FILTER_SANITIZE_STRING);
+        $client_image = filter_input(INPUT_POST, 'client_image', FILTER_SANITIZE_STRING);
+        $testimonial_stars = filter_input(INPUT_POST, 'testimonial_stars', FILTER_SANITIZE_STRING);
+        $testimonial_categories = isset($_REQUEST['testimonial_categories']) ? (array) $_REQUEST['testimonial_categories'] : array();
+
+        if (!empty($testimonial_categories) && is_array($testimonial_categories)) {
+            $testimonial_categories = array_map('intval', $testimonial_categories);
+        } else {
+            $testimonial_categories = array();
+        }
+        $post_data = array(
+            'ID' => $post_id,
+            'post_title' => $post_title,
+            'post_content' => $testimonial_content,
+            'post_status' => 'publish',
+        );
+
+
+        // Lets insert the post now.
+        $post_id = wp_update_post($post_data);
+        if (!empty($post_id)) {
+            if (!empty($testimonial_categories)) {
+                wp_set_post_terms($post_id, $testimonial_categories, 'stars_testimonial_cat', false);
+            }
+
+            update_post_meta($post_id, 'testimonial_company_name', $company_name);
+            update_post_meta($post_id, 'testimonial_company_url', $website_link);
+            update_post_meta($post_id, 'testimonial_stars', $testimonial_stars);
+            if (!empty($client_image)) {
+                set_post_thumbnail($post_id, $client_image);
+            } else {
+                delete_post_thumbnail($post_id);
+            }
+            $response['status'] = 1;
+        }
+
+        echo wp_json_encode($response);
+        wp_die();
     }
 
     public function testimonial_admin_init() {
         global $typenow, $current_screen;
         $request_url = $_SERVER['REQUEST_URI'];
         if(strpos($request_url, "post-new.php?post_type=stars_testimonial") !== false) {
-            wp_redirect(admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=add-testimonial"));
+            wp_safe_redirect(admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=add-testimonial"));
             exit;
         }
-        $action = isset($_REQUEST['action'])?$_REQUEST['action']:"";
+        $action = isset($_REQUEST['action']) ? sanitize_text_field(wp_unslash($_REQUEST['action'])) : "";
         if($action == "edit") {
-            $post_id = isset($_REQUEST['post'])?$_REQUEST['post']:"";
+            $post_id = isset($_REQUEST['post']) ? absint(wp_unslash($_REQUEST['post'])) : 0;
             if(!empty($post_id) && is_numeric($post_id) && $post_id > 0) {
                 $post = get_post($post_id);
                 if (isset($post->post_type) && $post->post_type == 'stars_testimonial') {
-                    wp_redirect(admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=update-testimonial&post=".$post_id));
+                    wp_safe_redirect(admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=update-testimonial&post=".$post_id));
                     exit;
                 }
             }
@@ -360,7 +377,7 @@ class Stars_Testimonials
     }
 
     public function custom_bulk_action($bulk_actions) {
-        $bulk_actions['move_to_folder'] = __( 'Move to Folder', 'email_to_eric');
+        $bulk_actions['move_to_folder'] = __( 'Move to Folder', 'stars-testimonials-with-slider-and-masonry-grid');
         return $bulk_actions;
     }
 
@@ -369,7 +386,7 @@ class Stars_Testimonials
         if($column_name == "testimonial_image") {
             $image_url = get_the_post_thumbnail_url($post_ID, 'thumbnail');
             if(!empty($image_url)) {
-                echo "<img src='".$image_url."' class='testimonial-thumb' />";
+                echo "<img src='".esc_url($image_url)."' class='testimonial-thumb' />";
             }
         }
     }
@@ -377,16 +394,16 @@ class Stars_Testimonials
     function manage_testimonial_image_thead($defaults, $d = "")
     {
         if(isset($defaults['title'])) {
-            $defaults['title'] = esc_attr__("Client's name", 'stars-testimonials');
+            $defaults['title'] = esc_attr__("Client's name", 'stars-testimonials-with-slider-and-masonry-grid');
         }
         $columns = $defaults + array(
-            'testimonial_image' => esc_attr__("Client's image", 'stars-testimonials'),
+            'testimonial_image' => esc_attr__("Client's image", 'stars-testimonials-with-slider-and-masonry-grid'),
         );
         return $columns;
     }
 
     public function plugin_text() {
-        load_plugin_textdomain("stars-testimonials", FALSE, dirname(plugin_basename(__FILE__)).'/languages/');
+        load_plugin_textdomain("stars-testimonials-with-slider-and-masonry-grid", "", dirname(plugin_basename(__FILE__)).'/languages/');
     }
 
 	public function admin_footer() {
@@ -407,105 +424,115 @@ class Stars_Testimonials
 		$response['error'] = 0;
 		$response['errors'] = array();
 		$response['message'] = "";
+		$postData = array_map('sanitize_text_field', wp_unslash($_POST));
+
+		// Validate nonce first - fail early if missing or invalid
+		if (!isset($_POST['star_testimonial_help_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['star_testimonial_help_nonce'])), 'star_testimonial_help_nonce')) {
+			$response['error'] = 1;
+			$response['errors'][] = array(
+				"key"   => "nonce",
+				"message" => __("Your request is not valid", 'stars-testimonials-with-slider-and-masonry-grid')
+			);
+			wp_send_json($response);
+		    wp_die();
+		}
+
+		// Validate other fields after nonce
 		$errorArray = [];
-		$errorMessage = __("%s is required", 'stars-testimonials');
-		$postData = $_POST;
+        // translators: %s is replaced by the field name that is required.
+        $errorMessage = __("%s is required", 'stars-testimonials-with-slider-and-masonry-grid');
+
 		if(!isset($postData['textarea_text']) || trim($postData['textarea_text']) == "") {
 			$error = array(
 				"key"   => "textarea_text",
-				"message" => __("Please enter your message",'stars-testimonials')
+				"message" => __("Please enter your message",'stars-testimonials-with-slider-and-masonry-grid')
 			);
 			$errorArray[] = $error;
 		}
 		if(!isset($postData['user_email']) || trim($postData['user_email']) == "") {
 			$error = array(
 				"key"   => "user_email",
-				"message" => sprintf($errorMessage,__("Email",'stars-testimonials'))
+				"message" => sprintf(
+                    /* translators: %s is replaced by the field name that is required. */
+                    $errorMessage,__("Email",'stars-testimonials-with-slider-and-masonry-grid')
+                )
 			);
 			$errorArray[] = $error;
-		} else if(!filter_var($postData['user_email'], FILTER_VALIDATE_EMAIL)) {
-			$error = array(
-				'key' => "user_email",
-				"message" => "Email is not valid"
-			);
+        } else if(!filter_var($postData['user_email'], FILTER_VALIDATE_EMAIL)) {
+            $error = array(
+                'key' => 'user_email',
+                'message' => __( 'Email is not valid', 'stars-testimonials-with-slider-and-masonry-grid' )
+            );
 			$errorArray[] = $error;
 		}
-		if(empty($errorArray)) {
-			if(!isset($postData['star_testimonial_help_nonce']) || trim($postData['star_testimonial_help_nonce']) == "") {
-				$error = array(
-					"key"   => "nonce",
-					"message" => __("Your request is not valid", 'stars-testimonials')
-				);
-				$errorArray[] = $error;
-			} else {
-				if(!wp_verify_nonce($postData['star_testimonial_help_nonce'], 'star_testimonial_help_nonce')) {
-					$error = array(
-						"key"   => "nonce",
-						"message" => __("Your request is not valid", 'stars-testimonials')
-					);
-					$errorArray[] = $error;
-				}
-			}
-		}
-		if(empty($errorArray)) {
-			$text_message = self::sanitize_options($postData['textarea_text'], 'textarea');
-			$email = self::sanitize_options($postData['user_email'],"email");
-			$domain = site_url();
 
-			global $current_user;
-
-			$user_name = $current_user->first_name." ".$current_user->last_name;
-
-			$response['status'] = 1;
-
-			/* sending message to Crisp */
-			$post_message = array();
-
-			$message_data = array();
-			$message_data['key'] = "Plugin";
-			$message_data['value'] = "Stars";
-			$post_message[] = $message_data;
-
-			$message_data = array();
-			$message_data['key'] = "Domain";
-			$message_data['value'] = $domain;
-			$post_message[] = $message_data;
-
-			$message_data = array();
-			$message_data['key'] = "Email";
-			$message_data['value'] = $email;
-			$post_message[] = $message_data;
-
-			$message_data = array();
-			$message_data['key'] = "Message";
-			$message_data['value'] = $text_message;
-			$post_message[] = $message_data;
-
-			$api_params = array(
-				'domain' => $domain,
-				'email' => $email,
-				'url' => site_url(),
-				'name' => $user_name,
-				'message' => $post_message,
-				'plugin' => "Stars",
-				'type' => "Need Help",
-			);
-
-			/* Sending message to Crisp API */
-			$crisp_response = wp_safe_remote_post("https://go.premio.io/crisp/crisp-send-message.php", array('body' => $api_params, 'timeout' => 15, 'sslverify' => true));
-
-			if (is_wp_error($crisp_response)) {
-				wp_safe_remote_post("https://go.premio.io/crisp/crisp-send-message.php", array('body' => $api_params, 'timeout' => 15, 'sslverify' => false));
-			}
-		} else {
+		if(!empty($errorArray)) {
 			$response['error'] = 1;
 			$response['errors'] = $errorArray;
+			wp_send_json($response);
+		    wp_die();
 		}
-		echo json_encode($response);
+
+		// All validations passed, proceed with sending message
+		$text_message = self::sanitize_options($postData['textarea_text'], 'textarea');
+		$email = self::sanitize_options($postData['user_email'],"email");
+		$domain = site_url();
+
+		global $current_user;
+
+		$user_name = $current_user->first_name." ".$current_user->last_name;
+
+		$response['status'] = 1;
+
+		/* sending message to Crisp */
+		$post_message = array();
+
+		$message_data = array();
+		$message_data['key'] = "Plugin";
+		$message_data['value'] = "Stars";
+		$post_message[] = $message_data;
+
+		$message_data = array();
+		$message_data['key'] = "Domain";
+		$message_data['value'] = $domain;
+		$post_message[] = $message_data;
+
+		$message_data = array();
+		$message_data['key'] = "Email";
+		$message_data['value'] = $email;
+		$post_message[] = $message_data;
+
+		$message_data = array();
+		$message_data['key'] = "Message";
+		$message_data['value'] = $text_message;
+		$post_message[] = $message_data;
+
+		$api_params = array(
+			'domain' => $domain,
+			'email' => $email,
+			'url' => site_url(),
+			'name' => $user_name,
+			'message' => $post_message,
+			'plugin' => "Stars",
+			'type' => "Need Help",
+		);
+
+		/* Sending message to Crisp API */
+		$crisp_response = wp_safe_remote_post("https://go.premio.io/crisp/crisp-send-message.php", array('body' => $api_params, 'timeout' => 15, 'sslverify' => true));
+
+		if (is_wp_error($crisp_response)) {
+			wp_safe_remote_post("https://go.premio.io/crisp/crisp-send-message.php", array('body' => $api_params, 'timeout' => 15, 'sslverify' => false));
+		}
+ 
+        wp_send_json($response);
+		wp_die();
 	}
 
 	public function plugin_action_links( $links ) {
-		$links['go_pro'] = sprintf( '<a href="%1$s" style="color: #FF5983;font-weight: bold;" class="testimonial-plugins-gopro">%2$s</a>',admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=upgrade-to-pro"), __( 'Upgrade', 'stars-testimonials' ) );
+		$links['go_pro'] = sprintf( 
+            /* translators: 1: Admin URL, 2: Upgrade text */
+            '<a href="%1$s" style="color: #FF5983;font-weight: bold;" class="testimonial-plugins-gopro">%2$s</a>',admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=upgrade-to-pro"), __( 'Upgrade', 'stars-testimonials-with-slider-and-masonry-grid' ) 
+        );
 		return $links;
 	}
 
@@ -514,7 +541,7 @@ class Stars_Testimonials
 			delete_option('stars_testimonail_plugin_redirection');
             $is_shown = get_option("stars_testimonials_update_message");
             if($is_shown === false) {
-                wp_redirect("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=mailjet");
+                wp_safe_redirect("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=mailjet");
                 exit;
             } else {
                 $args = array(
@@ -524,9 +551,9 @@ class Stars_Testimonials
                 $query_testimonials = new WP_Query( $args );
 
                 if ( $query_testimonials->have_posts() ) {
-                    wp_redirect("edit.php?post_type=stars_testimonial");
+                    wp_safe_redirect("edit.php?post_type=stars_testimonial");
                 } else {
-                    wp_redirect("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=add-testimonial");
+                    wp_safe_redirect("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=add-testimonial");
                 }
                 exit;
             }
@@ -543,22 +570,23 @@ class Stars_Testimonials
 
 	function setTestimonialMessage() {
 		$totalPostStatus = $this->get_total_testimonials();
-		if ($totalPostStatus) {
-			echo $this->testimonialMessage();
+		if ($totalPostStatus) { 
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            echo $this->testimonialMessage();
 		}
 	}
 
 	function testimonialButton() {
 		$screen = get_current_screen();
 		if($screen->post_type == "stars_testimonial") {
-			return "<a href='".admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=add-new")."' class='upgrade-block-button open-popup new-widget-button'>".__("+ New Widget Shortcode", 'stars-testimonials')."</a><a href='".PRO_PLUGIN_URL."' target='_blank' class='upgrade-block-button open-popup'>".__("Upgrade to Pro", 'stars-testimonials')."</a><div class='clear'></div>";
+			return "<a href='".admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=add-new")."' class='upgrade-block-button open-popup new-widget-button'>".__("+ New Widget Shortcode", 'stars-testimonials-with-slider-and-masonry-grid')."</a><a href='".PRO_PLUGIN_URL."' target='_blank' class='upgrade-block-button open-popup'>".__("Upgrade to Pro", 'stars-testimonials-with-slider-and-masonry-grid')."</a><div class='clear'></div>";
 		} else {
 			return "";
 		}
 	}
 
-	function testimonialMessage() {
-		return "<div class='testimonial-limit-msg'>".__("You have reached to maximum testimonial limit. Add more testimonials by <a href='".PRO_PLUGIN_URL."' target='_blank' class='upgrade-button open-popup'>Upgrading to Pro</a><div class='clear'></div>", 'stars-testimonials')."</div>";
+	function testimonialMessage() { 
+		return "<div class='testimonial-limit-msg'>" . esc_html__('You have reached to maximum testimonial limit. Add more testimonials by upgrading to Pro.', 'stars-testimonials-with-slider-and-masonry-grid') . " <a href='" . esc_url( PRO_PLUGIN_URL ) . "' target='_blank' class='upgrade-button open-popup'>" . esc_html__('Upgrading to Pro', 'stars-testimonials-with-slider-and-masonry-grid') . "</a><div class='clear'></div></div>";
 	}
 
 	function stars_testimonials_edit_form_top($post) {
@@ -646,63 +674,87 @@ class Stars_Testimonials
 	}
 
 	function remove_testimonial_record() {
-        if (current_user_can('manage_options')) {
-            $data = $_POST;
-            $response = array(
-                'status' => 0,
-                'message' => ""
-            );
-            $id = isset($data['id']) ? $data['id'] : "";
-
-            if (!isset($data['id']) || empty($data['id'])) {
-                $response['message'] = __("Your request is not valid", 'stars-testimonials');
-            } else if (!isset($data['nonce']) || empty($data['nonce'])) {
-                $response['message'] = __("Your request is not valid", 'stars-testimonials');
-            } else if (!current_user_can('delete_posts')) {
-                $response['message'] = __("Your request is not valid", 'stars-testimonials');
-            } else if (!wp_verify_nonce($data['nonce'], 'star_testimonial_remove_nonce_' . $id)) {
-                $response['message'] = __("Your request is not valid", 'stars-testimonials');
-            }
-
-            if (empty($response['message'])) {
-                $id = esc_sql($data['id']);
-
-                global $wpdb;
-                $tableName = $wpdb->prefix . DB_TESTIMONIAL_TABLE_NAME;
-
-                $wpdb->delete($tableName, array('id' => $id));
-                $response['status'] = 1;
-                $response['message'] = __("Shortcode has been removed successfully", 'stars-testimonials');
-            }
-            echo json_encode($response);
-            die;
+        if (!current_user_can('manage_options')) {
+            wp_die();
         }
+
+        $data = array_map('sanitize_text_field', wp_unslash($_POST));
+        $response = array(
+            'status' => 0,
+            'message' => ""
+        );
+
+        // Validate ID exists
+        if (!isset($_POST['id']) || empty($_POST['id'])) {
+            $response['message'] = __("Your request is not valid", 'stars-testimonials-with-slider-and-masonry-grid');
+            echo wp_json_encode($response);
+            wp_die();
+        }
+
+        $id = $data['id'];
+
+        // Validate nonce - fail early if missing or invalid
+        if (!isset($data['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($data['nonce'])), 'star_testimonial_remove_nonce_' . $id)) {
+            $response['message'] = __("Your request is not valid", 'stars-testimonials-with-slider-and-masonry-grid');
+            echo wp_json_encode($response);
+            wp_die();
+        }
+
+        // Check user capabilities after nonce validation
+        if (!current_user_can('delete_posts')) {
+            $response['message'] = __("Your request is not valid", 'stars-testimonials-with-slider-and-masonry-grid');
+            echo wp_json_encode($response);
+            wp_die();
+        }
+        // All validations passed, proceed with deletion
+        $id = esc_sql($data['id']);
+
+        global $wpdb;
+        $tableName = $wpdb->prefix . DB_TESTIMONIAL_TABLE_NAME; 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->delete($tableName, array('id' => $id));
+        $response['status'] = 1;
+        $response['message'] = __("Shortcode has been removed successfully", 'stars-testimonials-with-slider-and-masonry-grid');
+
+        echo wp_json_encode($response);
+        wp_die();
 	}
 
 	function save_testimonial_settings() {
-        if (current_user_can('manage_options')) {
-            $data = $_POST;
-            $id = "";
-            $response = array(
-                'status' => 0,
-                'message' => ""
-            );
-            if (isset($data['id']) && $data['id'] != "" && $data['id'] != "0") {
-                $id = $data['id'];
-            }
-            if (!isset($data['nonce']) || empty($data['nonce'])) {
-                $response['message'] = __("Your request is not valid", 'stars-testimonials');
-            } else if (empty($id) && !current_user_can('edit_posts')) {
-                $response['message'] = __("Your request is not valid", 'stars-testimonials');
-            } else if (!empty($id) && !current_user_can('edit_posts')) {
-                $response['message'] = __("Your request is not valid", 'stars-testimonials');
-            } else if (empty($id) && (!wp_verify_nonce($data['nonce'], 'star_testimonial_add_nonce'))) {
-                $response['message'] = __("Your request is not valid", 'stars-testimonials');
-            } else if (!empty($id) && !wp_verify_nonce($data['nonce'], 'star_testimonial_update_nonce_' . $id)) {
-                $response['message'] = __("Your request is not valid", 'stars-testimonials');
-            }
-            if (empty($response['message'])) {
-                $gridCategories = isset($data['testimonial_categories']) ? $data['testimonial_categories'] : "";
+        if (!current_user_can('manage_options')) {
+            wp_die();
+        }
+
+        $data = array_map('sanitize_text_field', wp_unslash($_POST));
+        $id = "";
+        $response = array(
+            'status' => 0,
+            'message' => ""
+        );
+
+        if (isset($_POST['id']) && $_POST['id'] != "" && $_POST['id'] != "0") {
+            $id = sanitize_text_field(wp_unslash($_POST['id']));
+        }
+
+        // Determine the correct nonce action based on whether we're adding or updating
+        $nonce_action = empty($id) ? 'star_testimonial_add_nonce' : 'star_testimonial_update_nonce_' . $id;
+
+        // Validate nonce - fail early if missing or invalid
+        if (!isset($data['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($data['nonce'])), $nonce_action)) {
+            $response['message'] = __("Your request is not valid", 'stars-testimonials-with-slider-and-masonry-grid');
+            echo wp_json_encode($response);
+            wp_die();
+        }
+
+        // Check user capabilities after nonce validation
+        if (!current_user_can('edit_posts')) {
+            $response['message'] = __("Your request is not valid", 'stars-testimonials-with-slider-and-masonry-grid');
+            echo wp_json_encode($response);
+            wp_die();
+        }
+
+        // All validations passed, proceed with saving
+        $gridCategories = isset($data['testimonial_categories']) ? $data['testimonial_categories'] : "";
                 if (!empty($gridCategories) && is_array($gridCategories)) {
                     foreach ($gridCategories as $key => $value) {
                         $gridCategories[$key] = self::sanitize_options($value, "int");
@@ -779,45 +831,46 @@ class Stars_Testimonials
                 $query .= "company_color_custom = '', ";
                 $query .= "arrow_color_custom = '', ";
                 $query = trim($query, ", ");
-                if ($query != "") {
-                    global $wpdb;
-                    $tableName = $wpdb->prefix . DB_TESTIMONIAL_TABLE_NAME;
-                    if ($id == "") {
-                        $user = wp_get_current_user();
-                        $query .= ", created_by = '{$user->ID}'";
-                        $query = "INSERT INTO {$tableName} SET {$query}";
-                        $response['message'] = __("Testimonial shortcode is created successfully", 'stars-testimonials');
-                    } else {
-                        $query = "UPDATE {$tableName} SET {$query} WHERE id = '{$id}'";
-                        $response['message'] = __("Testimonial shortcode is updated successfully", 'stars-testimonials');
-                    }
-                }
-                $response['status'] = 1;
-                require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-                dbDelta($query);
+        if ($query != "") {
+            global $wpdb;
+            $tableName = $wpdb->prefix . DB_TESTIMONIAL_TABLE_NAME;
+            if ($id == "") {
+                $user = wp_get_current_user();
+                $query .= ", created_by = '{$user->ID}'";
+                $query = "INSERT INTO {$tableName} SET {$query}";
+                $response['message'] = __("Testimonial shortcode is created successfully", 'stars-testimonials-with-slider-and-masonry-grid');
+            } else {
+                $query = "UPDATE {$tableName} SET {$query} WHERE id = '{$id}'";
+                $response['message'] = __("Testimonial shortcode is updated successfully", 'stars-testimonials-with-slider-and-masonry-grid');
             }
-            echo json_encode($response);
-            die;
         }
+        $response['status'] = 1;
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($query);
+
+        echo wp_json_encode($response);
+        wp_die();
 	}
 
 	function add_all_short_codes_menu() {
 		
-		if ( isset($_GET['hide_testirecommended_plugin']) && $_GET['hide_testirecommended_plugin'] == 1) {
+		$hide_recommended = filter_input(INPUT_GET, 'hide_testirecommended_plugin', FILTER_VALIDATE_INT);
+     
+		if ( $hide_recommended === 1 ) {
 			update_option('hide_testirecommended_plugin',true);				
 		}
 		$hide_testirecommended_plugin = get_option('hide_testirecommended_plugin');
-		$recommended_plugin_name =  __('Recommended Plugins','stars-testimonials');
+		$recommended_plugin_name =  __('Recommended Plugins','stars-testimonials-with-slider-and-masonry-grid');
 		
-		add_submenu_page('edit.php?post_type=stars_testimonial', __('All Widget Shortcodes','stars-testimonials'), __('All Widget Shortcodes','stars-testimonials'), 'manage_options', 'all-shortcodes', array(&$this,  'short_codes_page'));
+		add_submenu_page('edit.php?post_type=stars_testimonial', __('All Widget Shortcodes','stars-testimonials-with-slider-and-masonry-grid'), __('All Widget Shortcodes','stars-testimonials-with-slider-and-masonry-grid'), 'manage_options', 'all-shortcodes', array(&$this,  'short_codes_page'));
 		
-		add_submenu_page('edit.php?post_type=stars_testimonial', __('Collect Testimonials','stars-testimonials'), __('Collect Testimonials','stars-testimonials'), 'manage_options', 'collect_review_page', array(&$this,  'collect_review_page'));
+		add_submenu_page('edit.php?post_type=stars_testimonial', __('Collect Testimonials','stars-testimonials-with-slider-and-masonry-grid'), __('Collect Testimonials','stars-testimonials-with-slider-and-masonry-grid'), 'manage_options', 'collect_review_page', array(&$this,  'collect_review_page'));
 		
 		if ( !$hide_testirecommended_plugin ) {
 			add_submenu_page('edit.php?post_type=stars_testimonial', $recommended_plugin_name, $recommended_plugin_name, 'manage_options', 'recommended-plugins', array(&$this,   'recommended_plugins'));
 		}
 		
-		add_submenu_page('edit.php?post_type=stars_testimonial', __('Upgrade to Pro','stars-testimonials'), __('Upgrade to Pro','stars-testimonials'), 'manage_options', 'all-shortcodes&task=upgrade-to-pro', 'short_codes_page');
+		add_submenu_page('edit.php?post_type=stars_testimonial', __('Upgrade to Pro','stars-testimonials-with-slider-and-masonry-grid'), __('Upgrade to Pro','stars-testimonials-with-slider-and-masonry-grid'), 'manage_options', 'all-shortcodes&task=upgrade-to-pro', 'short_codes_page');
     }
 	
 	public function collect_review_page(){
@@ -829,23 +882,23 @@ class Stars_Testimonials
     function short_codes_page() {
         $page = "all-shortcodes.php";
         if(isset($_GET['task'])) {
-            $task = $_GET['task'];
+            $task = sanitize_text_field($_GET['task']);
             if($task == "add-new") {
                 $page = "add-new-shortcode.php";
             } else if($task == "add-testimonial") {
                 $page = "testimonial-add.php";
             } else if($task == "update-testimonial") {
-                $post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : "";
+                $post_id = isset($_REQUEST['post']) ? absint(wp_unslash($_REQUEST['post'])) : 0;
                 if (!empty($post_id) && is_numeric($post_id) && $post_id > 0) {
                     $post = get_post($post_id);
                     if (isset($post->post_type) && $post->post_type == 'stars_testimonial') {
                         $page = "testimonial-update.php";
                     } else {
-                        echo "<script>window.location='".admin_url("edit.php?post_type=stars_testimonial")."'</script>";
+                        echo "<script>window.location='".esc_url(admin_url("edit.php"))."?post_type=stars_testimonial';</script>";
                         exit;
                     }
                 } else {
-                    echo "<script>window.location='".admin_url("edit.php?post_type=stars_testimonial")."'</script>";
+                    echo "<script>window.location='".esc_url(admin_url("edit.php"))."?post_type=stars_testimonial';</script>";
                     exit;
                 }
             } else if($task == "upgrade-to-pro") {
@@ -862,10 +915,10 @@ class Stars_Testimonials
                     $has_testimonials = 1;
                 }
                 $page = "update-mailjet.php";
-            } else if($task == "edit" && isset($_GET['id']) && !empty($_GET['id']) && is_numeric($_GET['id']) && $_GET['id'] >0 ) {
+            } else if($task == "edit" && isset($_GET['id']) && !empty($_GET['id']) && is_numeric($_GET['id']) && absint($_GET['id']) > 0 ) {
                 $page = "update-shortcode.php";
             }
-            else if($task == "preview" && isset($_GET['id']) && !empty($_GET['id']) && is_numeric($_GET['id']) && $_GET['id'] >0 ) {
+            else if($task == "preview" && isset($_GET['id']) && !empty($_GET['id']) && is_numeric($_GET['id']) && absint($_GET['id']) > 0 ) {
                 $page = "preview-shortcode.php";
             }
         }
@@ -889,29 +942,28 @@ class Stars_Testimonials
 	public function change_placeholder_text() {
 		$screen = get_current_screen();
         if($screen->post_type == 'stars_testimonial' ) {
-			$title = __('Client’s name', 'stars-testimonials');
+			$title = __('Client’s name', 'stars-testimonials-with-slider-and-masonry-grid');
             return $title;
 		}
 	}
 
 	public function stars_testimonials_admin_styles($hook) {
-        $post_type = isset($_REQUEST['post_type'])&&!empty($_REQUEST['post_type'])?$_REQUEST['post_type']:"";
-        $action = isset($_REQUEST['action'])&&!empty($_REQUEST['action'])?$_REQUEST['action']:"";
+        $post_type = isset($_REQUEST['post_type'])&&!empty($_REQUEST['post_type']) ? sanitize_text_field(wp_unslash($_REQUEST['post_type'])) : "";
+        $action = isset($_REQUEST['action'])&&!empty($_REQUEST['action']) ? sanitize_text_field(wp_unslash($_REQUEST['action'])) : "";
         $post_type2 = "";
         if($action == "edit" && isset($_REQUEST['post'])) {
-            $post = get_post($_REQUEST['post']);
+            $post = get_post(absint($_REQUEST['post']));
             if(!empty($post)) {
                 $post_type2 = $post->post_type;
             }
         }
-        $task = (isset($_GET['task']) && $_GET['task'] == "upgrade-to-pro")?"upgrade":"";
+        $task = (isset($_GET['task']) && sanitize_text_field(wp_unslash($_GET['task'])) == "upgrade-to-pro")?"upgrade":"";
         if($hook == "stars_testimonial_page_all-shortcodes" || $post_type == "stars_testimonial" || ($action == "edit" && $post_type2 == "stars_testimonial")) {
             wp_register_style('testimonial-custom-front-style', plugins_url('/css/styles.css', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
             wp_register_style('testimonial-custom-style-mcustomscrollbar', plugins_url('/css/admin/jquery.mcustomscrollbar.min.css', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
             wp_register_style('testimonial-custom-style-star-fonts', plugins_url('/css/star-fonts.css', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
             wp_register_style('testimonial-custom-style-range', plugins_url('/css/admin/as-range.css', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
-            wp_register_style('testimonial-custom-style-colorpicker', plugins_url('/css/admin/colorpicker.css', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
-            wp_register_style('testimonial-custom-style-magnific', plugins_url('/css/admin/magnific-popup.css', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
+            wp_register_style('testimonial-custom-style-colorpicker', plugins_url('/css/admin/colorpicker.css', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION); 
             wp_register_style('testimonial-custom-style-select2', plugins_url('/css/admin/select2.min.css', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
             wp_enqueue_style('testimonial-custom-style-select2');
             wp_register_style('testimonial-custom-style-sweetalert2', plugins_url('/css/admin/sweetalert2.min.css', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
@@ -919,8 +971,7 @@ class Stars_Testimonials
             wp_enqueue_style('testimonial-custom-front-style');
             wp_enqueue_style('testimonial-custom-style-mcustomscrollbar');
             wp_enqueue_style('testimonial-custom-style-star-fonts');
-            wp_enqueue_style('testimonial-custom-style-range');
-            wp_enqueue_style('testimonial-custom-style-magnific');
+            wp_enqueue_style('testimonial-custom-style-range'); 
             wp_enqueue_style('testimonial-custom-style-colorpicker');
             wp_enqueue_style('testimonial-custom-style-sweetalert2');
             wp_enqueue_style('testimonial-custom-style');
@@ -932,11 +983,12 @@ class Stars_Testimonials
 	}
 
     public function stars_testimonials_admin_script($hook) {
-        $post_type = isset($_REQUEST['post_type'])&&!empty($_REQUEST['post_type'])?$_REQUEST['post_type']:"";
-        $action = isset($_REQUEST['action'])&&!empty($_REQUEST['action'])?$_REQUEST['action']:"";
+        $post_type = isset($_REQUEST['post_type'])&&!empty($_REQUEST['post_type']) ? sanitize_text_field(wp_unslash($_REQUEST['post_type'])) : "";
+        $action = isset($_REQUEST['action'])&&!empty($_REQUEST['action']) ? sanitize_text_field(wp_unslash($_REQUEST['action'])) : "";
         $post_type2 = "";
         if($action == "edit" && isset($_REQUEST['post'])) {
-            $post = get_post($_REQUEST['post']);
+            $post_id = sanitize_text_field(wp_unslash($_REQUEST['post']));
+            $post = get_post($post_id);
             if(!empty($post)) {
                 $post_type2 = $post->post_type;
             }
@@ -947,27 +999,25 @@ class Stars_Testimonials
             wp_enqueue_media();
             wp_register_script('testimonial-custom-script-mcustomscrollbar', plugins_url('/js/admin/jquery.mcustomscrollbar.min.js', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
             wp_register_script('testimonial-custom-script-mousewheel', plugins_url('/js/admin/jquery.mousewheel.min.js', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
-            wp_register_script('testimonial-custom-script-asrange', plugins_url('/js/admin/jquery-asrange.min.js', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
-            wp_register_script('testimonial-custom-script-magnific', plugins_url('/js/admin/jquery.magnific-popup.min.js', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
+            wp_register_script('testimonial-custom-script-asrange', plugins_url('/js/admin/jquery-asrange.min.js', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION); 
             wp_register_script('testimonial-custom-script-sweetalert', plugins_url('/js/admin/sweetalert.all.min.js', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
             wp_register_script('testimonial-custom-script-select2', plugins_url('/js/admin/select2.full.min.js', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
             wp_register_script('testimonial-custom-script-colorpicker', plugins_url('/js/admin/colorpicker.js', __FILE__), array(), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
             wp_register_script('testimonial-custom-script-admin', plugins_url('/js/admin/admin.js', __FILE__), array('jquery', 'wp-color-picker'), PREMIO_TESTIMONIAL_PLUGIN_VERSION);
             wp_enqueue_script('testimonial-custom-script-mcustomscrollbar');
             wp_enqueue_script('testimonial-custom-script-mousewheel');
-            wp_enqueue_script('testimonial-custom-script-asrange');
-            wp_enqueue_script('testimonial-custom-script-magnific');
+            wp_enqueue_script('testimonial-custom-script-asrange'); 
             wp_enqueue_script('testimonial-custom-script-sweetalert');
             wp_enqueue_script('testimonial-custom-script-select2');
             wp_enqueue_script('testimonial-custom-script-colorpicker');
             wp_enqueue_script('testimonial-custom-script-admin');
 
             wp_localize_script('testimonial-custom-script-admin', 'settings', array(
-                'send_label' => __('Save Settings', 'save-settings'),
+                'send_label' => __('Save Settings', 'stars-testimonials-with-slider-and-masonry-grid'),
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'plugin_url' => admin_url('edit.php?post_type=stars_testimonial&page=all-shortcodes'),
-                "REMOVE_MESSAGE" => __("Are you sure you want to delete the selected shortcode?"),
-                "REQUIRED_MESSAGE" => __("This filed is required", 'stars-testimonials'),
+                "REMOVE_MESSAGE" => __("Are you sure you want to delete the selected shortcode?", 'stars-testimonials-with-slider-and-masonry-grid'),
+                "REQUIRED_MESSAGE" => __("This filed is required", 'stars-testimonials-with-slider-and-masonry-grid'),
                 "PRO_URL" => admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=upgrade-to-pro"),
                 "stylesObj" => json_encode($GLOBALS['colorStyleArray']),
                 "PRO_BUTTON" => $this->testimonialButton(),
@@ -990,26 +1040,55 @@ class Stars_Testimonials
 	}
 
 	function register_testimonials(){
+
+        $create_url   = admin_url( 'post-new.php?post_type=stars_testimonial' );
+        $shortcode_url = admin_url( 'edit.php?post_type=stars_testimonial&page=all-shortcodes' );
+
+        $not_found = sprintf(
+            /* translators: 1: URL to create new testimonial, 2: URL to all widget shortcodes page */
+            __(
+                '<div class="no-testimonial-record">
+                    <a class="link add-testimonial-record" href="%1$s">+ Create Your First Testimonial</a>
+                </div>
+                <div class="no-testimonial-record record-message">
+                    Once you have your first testimonials, go to the 
+                    “<a class="link" href="%2$s">All Widget Shortcodes</a>”
+                    page and create your first shortcode. 
+                    Check out the video for more info:
+                </div>',
+                'stars-testimonials-with-slider-and-masonry-grid'
+            ),
+            esc_url( $create_url ),
+            esc_url( $shortcode_url )
+        );
+
+        $not_found .= "<div class='no-testimonials-area'></div>
+        <style>
+            table.fixed { border:none; }
+            .wp-list-table thead,
+            .wp-list-table tfoot { display:none; }
+        </style>";
         $labels_post = array(
-			'name'               => __( 'Testimonials', 'Testimonials', 'stars-testimonials' ),
-			'singular_name'      => _x( 'Testimonial', 'Testimonial', 'stars-testimonials' ),
-			'menu_name'          => _x( 'Stars Testimonials', 'Stars Testimonials', 'stars-testimonials' ),
-			'name_admin_bar'     => _x( 'Testimonial', 'Testimonial', 'stars-testimonials' ),
-			'add_new'            => _x( '+ New Testimonial', 'Testimonial', 'stars-testimonials' ),
-			'add_new_item'       => _x( '+ New Testimonial', 'stars-testimonials' ),
-			'new_item'           => __( 'New Testimonial', 'stars-testimonials' ),
-			'edit_item'          => __( 'Edit Testimonial', 'stars-testimonials' ),
-			'view_item'          => __( 'View Testimonial', 'stars-testimonials' ),
-			'all_items'          => __( 'All Testimonials', 'stars-testimonials' ),
-			'search_items'       => __( 'Search Testimonials', 'stars-testimonials' ),
-			'parent_item_colon'  => __( 'Parent Testimonials:', 'stars-testimonials' ),
-			'not_found'          => __( '<div class="no-testimonial-record"><a class="link add-testimonial-record" href="'.admin_url("post-new.php?post_type=stars_testimonial").'">+ Create Your First Testimonial</a></div><div class="no-testimonial-record record-message">Once you have your first testimonials, go to the “<a class="link" href="'.admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes").'">All Widget Shortcodes</a>” page and create your first shortcode. Check out the video for more info:</div>', 'stars-testimonials' )."<div class='no-testimonials-area'></div><style>table.fixed {border:none;} .wp-list-table thead, .wp-list-table tfoot{display: none;}",
-			'not_found_in_trash' => __( 'No Testimonials found in Trash.', 'stars-testimonials' )
+			'name'               => _x( 'Testimonials', 'Testimonials', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'singular_name'      => _x( 'Testimonial', 'Testimonial', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'menu_name'          => _x( 'Stars Testimonials', 'Stars Testimonials', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'name_admin_bar'     => _x( 'Testimonial', 'Testimonial', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'add_new'            => _x( '+ New Testimonial', 'Testimonial', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'add_new_item'       => _x( '+ New Testimonial', 'Testimonial', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'new_item'           => __( 'New Testimonial', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'edit_item'          => __( 'Edit Testimonial', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'view_item'          => __( 'View Testimonial', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'all_items'          => __( 'All Testimonials', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'search_items'       => __( 'Search Testimonials', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'parent_item_colon'  => __( 'Parent Testimonials:', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'not_found'          => $not_found,
+
+			'not_found_in_trash' => __( 'No Testimonials found in Trash.', 'stars-testimonials-with-slider-and-masonry-grid' )
 		);
 
         $args = array(
             'labels'             => $labels_post,
-            'description'        => __( 'Your Testimonials.', 'stars-testimonials' ),
+            'description'        => __( 'Your Testimonials.', 'stars-testimonials-with-slider-and-masonry-grid' ),
             'show_ui'            => true,
             'show_in_menu'       => true,
             'rewrite'            => array( 'slug' => 'arrow_subscribe_forms' ),
@@ -1025,17 +1104,17 @@ class Stars_Testimonials
 		register_post_type( 'stars_testimonial', $args );
 
 		$labels_tax = array(
-			'name'              => _x( 'Categories', 'taxonomy general name', 'stars-testimonials' ),
-			'singular_name'     => _x( 'Category', 'taxonomy singular name', 'stars-testimonials' ),
-			'search_items'      => __( 'Search Categories', 'stars-testimonials' ),
-			'all_items'         => __( 'All Categories', 'stars-testimonials' ),
-			'parent_item'       => __( 'Parent Category', 'stars-testimonials' ),
-			'parent_item_colon' => __( 'Parent Category:', 'stars-testimonials' ),
-			'edit_item'         => __( 'Edit Category', 'stars-testimonials' ),
-			'update_item'       => __( 'Update Category', 'stars-testimonials' ),
-			'add_new_item'      => __( 'Add New Category', 'stars-testimonials' ),
-			'new_item_name'     => __( 'New Category Name', 'stars-testimonials' ),
-			'menu_name'         => __( 'Testimonial Categories', 'stars-testimonials' ),
+			'name'              => _x( 'Categories', 'taxonomy general name', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'singular_name'     => _x( 'Category', 'taxonomy singular name', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'search_items'      => __( 'Search Categories', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'all_items'         => __( 'All Categories', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'parent_item'       => __( 'Parent Category', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'parent_item_colon' => __( 'Parent Category:', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'edit_item'         => __( 'Edit Category', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'update_item'       => __( 'Update Category', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'add_new_item'      => __( 'Add New Category', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'new_item_name'     => __( 'New Category Name', 'stars-testimonials-with-slider-and-masonry-grid' ),
+			'menu_name'         => __( 'Testimonial Categories', 'stars-testimonials-with-slider-and-masonry-grid' ),
 		);
 
 		$args_tax = array(
@@ -1056,22 +1135,26 @@ class Stars_Testimonials
 		$post_type        = get_post_type( $post );
 		$post_type_object = get_post_type_object( $post_type );
 
-		$messages['stars_testimonial'] = array(
-			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Testimonial updated.', 'stars-testimonials' ),
-			2  => __( 'Custom field updated.', 'stars-testimonials' ),
-			3  => __( 'Custom field deleted.', 'stars-testimonials' ),
-			4  => __( 'Testimonial updated.', 'stars-testimonials' ),
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Testimonial restored to revision from %s', 'stars-testimonials' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'Testimonial published.', 'stars-testimonials' ),
-			7  => __( 'Testimonial saved.', 'stars-testimonials' ),
-			8  => __( 'Testimonial submitted.', 'stars-testimonials' ),
-			9  => sprintf(
-				__( 'Testimonial scheduled for: <strong>%1$s</strong>.', 'stars-testimonials' ),
-				date_i18n( __( 'M j, Y @ G:i', 'stars-testimonials' ), strtotime( $post->post_date ) )
-			),
-			10 => __( 'Testimonial draft updated.', 'stars-testimonials' )
-		);
+        $messages['stars_testimonial'] = array(
+            0  => '', // Unused. Messages start at index 1.
+            1  => __( 'Testimonial updated.', 'stars-testimonials-with-slider-and-masonry-grid' ),
+            2  => __( 'Custom field updated.', 'stars-testimonials-with-slider-and-masonry-grid' ),
+            3  => __( 'Custom field deleted.', 'stars-testimonials-with-slider-and-masonry-grid' ),
+            4  => __( 'Testimonial updated.', 'stars-testimonials-with-slider-and-masonry-grid' ),
+            
+            5  => isset( $_GET['revision'] ) ? sprintf( 
+                /* translators: %s is replaced by the revision date/time. */
+                 __( 'Testimonial restored to revision from %s', 'stars-testimonials-with-slider-and-masonry-grid' ), wp_post_revision_title( intval( wp_unslash( $_GET['revision'] ) ), false ) ) : false,
+            6  => __( 'Testimonial published.', 'stars-testimonials-with-slider-and-masonry-grid' ),
+            7  => __( 'Testimonial saved.', 'stars-testimonials-with-slider-and-masonry-grid' ),
+            8  => __( 'Testimonial submitted.', 'stars-testimonials-with-slider-and-masonry-grid' ),
+            9  => sprintf( 
+                // translators: %1$s is replaced by the scheduled date/time.
+                __( 'Testimonial scheduled for: <strong>%1$s</strong>.', 'stars-testimonials-with-slider-and-masonry-grid' ),
+                date_i18n( __( 'M j, Y @ G:i', 'stars-testimonials-with-slider-and-masonry-grid' ), strtotime( $post->post_date ) )
+            ),
+            10 => __( 'Testimonial draft updated.', 'stars-testimonials-with-slider-and-masonry-grid' )
+        );
 
 		return $messages;
 	}
@@ -1079,7 +1162,7 @@ class Stars_Testimonials
 	function adding_custom_meta_boxes( $post ) {
 	    add_meta_box( 
 	        'stars-testimonials-settings',
-	        __( 'Testimonial Settings' ),
+	        __( 'Testimonial Settings', 'stars-testimonials-with-slider-and-masonry-grid' ),
 	        array($this, 'render_settings_page'),
 	        'stars_testimonial',
 	        'normal',
@@ -1103,21 +1186,27 @@ class Stars_Testimonials
         if ( !isset( $_POST['wcp_testimonial_nonce'] ) )
             return;
 
-        if ( !wp_verify_nonce( $_POST['wcp_testimonial_nonce'], plugin_basename( __FILE__ ) ) )
+        if ( !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wcp_testimonial_nonce'] ) ), plugin_basename( __FILE__ ) ) )
             return;
 
         // OK, we're authenticated: we need to find and save the data
 
         if (isset($_POST['testimonial_company_name'])) {
-            update_post_meta( $post_id, 'testimonial_company_name', sanitize_text_field($_POST['testimonial_company_name']) );
+            update_post_meta( $post_id, 'testimonial_company_name', sanitize_text_field( wp_unslash( $_POST['testimonial_company_name'] ) ) );
         }
 
         if (isset($_POST['testimonial_company_url'])) {
-            update_post_meta( $post_id, 'testimonial_company_url', esc_url($_POST['testimonial_company_url']) );
+            $company_url = sanitize_url( wp_unslash( $_POST['testimonial_company_url'] ) );
+            if (!empty($company_url)) {
+                update_post_meta( $post_id, 'testimonial_company_url', $company_url );
+            }
         }
 
         if (isset($_POST['testimonial_stars'])) {
-            update_post_meta( $post_id, 'testimonial_stars', sanitize_text_field($_POST['testimonial_stars']) );
+            $stars = intval( wp_unslash( $_POST['testimonial_stars'] ) );
+            if ($stars >= 0 && $stars <= 5) {
+                update_post_meta( $post_id, 'testimonial_stars', $stars );
+            }
         }
 	}
 
@@ -1133,6 +1222,8 @@ class Stars_Testimonials
         $tableName = $wpdb->prefix . DB_TESTIMONIAL_TABLE_NAME;
 
         $query = "SELECT * FROM {$tableName} WHERE id = '{$id}'";
+        
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
         $result = $wpdb->get_row($query);
         if(empty($result)) {
             return "";
@@ -1191,7 +1282,6 @@ class Stars_Testimonials
         // Init the Vars
         $row_class = '';
         $column_class = '';
-        $data_attr = '';
 
         switch ($type) {
             case 'grid':
@@ -1232,8 +1322,8 @@ class Stars_Testimonials
         $query_testimonials = new WP_Query( $args );
 
         if ( $query_testimonials->have_posts() ) {
-            echo '<div class="stars-testimonials premio-testimonials-'.$type.'" id="st-'.esc_attr($r_id).'">';
-            echo '<div class="premio-testimonials-content '.esc_attr($row_class).'" '.esc_attr($data_attr).'>';
+            echo '<div class="stars-testimonials premio-testimonials-'.esc_attr($type).'" id="st-'.esc_attr($r_id).'">';
+            echo '<div class="premio-testimonials-content '.esc_attr($row_class).'">';
 
             while ( $query_testimonials->have_posts() ) {
                 $query_testimonials->the_post();
@@ -1361,12 +1451,16 @@ class Stars_Testimonials
         $query_testimonials = new WP_Query( $args );
 
         if ( $query_testimonials->have_posts() ) {
-            echo '<div class="stars-testimonials premio-testimonials='.esc_attr($type).'" id="st-'.esc_attr($r_id).'">';
+            echo '<div class="stars-testimonials premio-testimonials='.esc_attr($type).'" id="st-'.esc_attr($r_id).'">'; 
+            echo '<div class="premio-testimonials-content '.esc_attr($row_class).'"'; 
             if($type == "slider") {
-
+                if (is_array($atts)) {
+                    foreach ($atts as $p_name => $p_val) {
+                        echo ' data-'.esc_attr($p_name).'="'.esc_attr($p_val).'"';
+                    }
+                }
             }
-            echo '<div class="premio-testimonials-content '.esc_attr($row_class).'" '.$data_attr.'>';
-
+            echo ">";
             while ( $query_testimonials->have_posts() ) {
                 $query_testimonials->the_post();
                 $company = get_post_meta( get_the_id(), 'testimonial_company_name', true );
@@ -1446,22 +1540,23 @@ class Stars_Testimonials
 		if ($url != '') { ?>
 			<a target="_blank" href="<?php echo esc_url( $url ); ?>"><?php echo esc_attr( $company ); ?></a>
 		<?php } else {
-			echo $company;
+            
+			echo esc_html( $company );
 		}
 	}
 
 	function testimonial_integrateWithVC(){
 	   vc_map( array(
-			"name" => __( "Stars Testimonial", "stars-testimonials" ),
+			"name" => __( "Stars Testimonial", "stars-testimonials-with-slider-and-masonry-grid" ),
 			"base" => "stars_testimonials",
 			"class" => "",
-			"category" => __( "Content", "stars-testimonials"),
+			"category" => __( "Content", "stars-testimonials-with-slider-and-masonry-grid"),
 			"params" => array(
 				array(
 				"type" 			=> 	"dropdown",
-				"heading" 		=> 	__( 'Testimonial Type', 'counter-vc' ),
+				"heading" 		=> 	__( 'Testimonial Type', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"type",
-				"description" 	=> 	__( 'Choose how you want to display testimonials', 'counter-vc' ),
+				"description" 	=> 	__( 'Choose how you want to display testimonials', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'General',
 				"value" 		=> array(
 					"Grid"		=> "grid", 
@@ -1471,9 +1566,9 @@ class Stars_Testimonials
 				),
 				array(
 				"type" 			=> 	"dropdown",
-				"heading" 		=> 	__( 'Testimonial Style', 'counter-vc' ),
+				"heading" 		=> 	__( 'Testimonial Style', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"style",
-				"description" 	=> 	__( 'Choose single testimonial style here', 'counter-vc' ),
+				"description" 	=> 	__( 'Choose single testimonial style here', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'General',
 				"value" 		=> array(
 					"Style 1"		=> "1",
@@ -1497,9 +1592,9 @@ class Stars_Testimonials
 				),
 				array(
 				"type" 			=> 	"dropdown",
-				"heading" 		=> 	__( 'Number of Columns', 'counter-vc' ),
+				"heading" 		=> 	__( 'Number of Columns', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"cols",
-				"description" 	=> 	__( 'How many testimonials in a row', 'counter-vc' ),
+				"description" 	=> 	__( 'How many testimonials in a row', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'General',
 				"value" 		=> array(
 					"1 Column"		=> "1",
@@ -1519,141 +1614,141 @@ class Stars_Testimonials
 				),
 				array(
 				"type" 			=> 	"textfield",
-				"heading" 		=> 	__( 'Categories', 'counter-vc' ),
+				"heading" 		=> 	__( 'Categories', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"cats",
-				"description" 	=> 	__( 'Comma separated categories IDs', 'counter-vc' ),
+				"description" 	=> 	__( 'Comma separated categories IDs', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'General',
 				),
 				array(
 				"type" 			=> 	"textfield",
-				"heading" 		=> 	__( 'Order', 'counter-vc' ),
+				"heading" 		=> 	__( 'Order', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"order",
-				"description" 	=> 	__( 'ASC or DESC', 'counter-vc' ),
+				"description" 	=> 	__( 'ASC or DESC', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'General',
 				),
 				array(
 				"type" 			=> 	"textfield",
-				"heading" 		=> 	__( 'Order By', 'counter-vc' ),
+				"heading" 		=> 	__( 'Order By', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"orderby",
-				"description" 	=> 	__( 'Eg: date', 'counter-vc' ),
+				"description" 	=> 	__( 'Eg: date', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'General',
 				),
 				array(
 				"type" 			=> 	"textfield",
-				"heading" 		=> 	__( 'Total Number of Testimonials', 'counter-vc' ),
+				"heading" 		=> 	__( 'Total Number of Testimonials', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"total",
-				"description" 	=> 	__( 'How many maximum testimonials you want to display, -1 for all', 'counter-vc' ),
+				"description" 	=> 	__( 'How many maximum testimonials you want to display, -1 for all', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'General',
 				),
 				
 				array(
 				"type" 			=> 	"textfield",
-				"heading" 		=> 	__( 'Number of Columns', 'counter-vc' ),
+				"heading" 		=> 	__( 'Number of Columns', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"slidestoshow",
-				"description" 	=> 	__( 'How many testimonials at a time', 'counter-vc' ),
+				"description" 	=> 	__( 'How many testimonials at a time', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Slider Settings',
 				'dependency' => array( 'element' => 'type', 'value' => array('slider') ),
 				),
 
 				array(
 				"type" 			=> 	"textfield",
-				"heading" 		=> 	__( 'Slides to Scroll', 'counter-vc' ),
+				"heading" 		=> 	__( 'Slides to Scroll', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"slidestoscroll",
-				"description" 	=> 	__( 'How many testimonial scroll at a time', 'counter-vc' ),
+				"description" 	=> 	__( 'How many testimonial scroll at a time', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Slider Settings',
 				'dependency' => array( 'element' => 'type', 'value' => array('slider') ),
 				),
 
 				array(
 				"type" 			=> 	"textfield",
-				"heading" 		=> 	__( 'Slider Speed', 'counter-vc' ),
+				"heading" 		=> 	__( 'Slider Speed', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"speed",
-				"description" 	=> 	__( 'Provide slide speed in ms', 'counter-vc' ),
+				"description" 	=> 	__( 'Provide slide speed in ms', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Slider Settings',
 				'dependency' => array( 'element' => 'type', 'value' => array('slider') ),
 				),
 
 				array(
 				"type" 			=> 	"checkbox",
-				"heading" 		=> 	__( 'Bottom Dots', 'counter-vc' ),
+				"heading" 		=> 	__( 'Bottom Dots', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"dots",
-				"description" 	=> 	__( 'Check to enable dots', 'counter-vc' ),
+				"description" 	=> 	__( 'Check to enable dots', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Slider Settings',
 				'dependency' => array( 'element' => 'type', 'value' => array('slider') ),
 				),
 
 				array(
 				"type" 			=> 	"checkbox",
-				"heading" 		=> 	__( 'Arrows', 'counter-vc' ),
+				"heading" 		=> 	__( 'Arrows', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"arrows",
-				"description" 	=> 	__( 'Check to enable navigation arrows', 'counter-vc' ),
+				"description" 	=> 	__( 'Check to enable navigation arrows', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Slider Settings',
 				'dependency' => array( 'element' => 'type', 'value' => array('slider') ),
 				),
 
 				array(
 				"type" 			=> 	"checkbox",
-				"heading" 		=> 	__( 'Auto Play', 'counter-vc' ),
+				"heading" 		=> 	__( 'Auto Play', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"autoplay",
-				"description" 	=> 	__( 'Check to enable auto play', 'counter-vc' ),
+				"description" 	=> 	__( 'Check to enable auto play', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Slider Settings',
 				'dependency' => array( 'element' => 'type', 'value' => array('slider') ),
 				),
 
 				array(
 				"type" 			=> 	"textfield",
-				"heading" 		=> 	__( 'Auto Play Speed', 'counter-vc' ),
+				"heading" 		=> 	__( 'Auto Play Speed', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"autoplayspeed",
-				"description" 	=> 	__( 'Auto Play speed in ms Eg: 3000', 'counter-vc' ),
+				"description" 	=> 	__( 'Auto Play speed in ms Eg: 3000', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Slider Settings',
 				'dependency' => array( 'element' => 'type', 'value' => array('slider') ),
 				),
 
 				array(
 				"type" 			=> 	"colorpicker",
-				"heading" 		=> 	__( 'Stars Color', 'counter-vc' ),
+				"heading" 		=> 	__( 'Stars Color', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"stars_color",
-				"description" 	=> 	__( 'Choose Stars rating color here', 'counter-vc' ),
+				"description" 	=> 	__( 'Choose Stars rating color here', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Colors',
 				),
 
 				array(
 				"type" 			=> 	"colorpicker",
-				"heading" 		=> 	__( 'Text Color', 'counter-vc' ),
+				"heading" 		=> 	__( 'Text Color', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"text_color",
-				"description" 	=> 	__( 'Choose testimonial text color here', 'counter-vc' ),
+				"description" 	=> 	__( 'Choose testimonial text color here', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Colors',
 				),
 
 				array(
 				"type" 			=> 	"colorpicker",
-				"heading" 		=> 	__( 'Background Color', 'counter-vc' ),
+				"heading" 		=> 	__( 'Background Color', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"bg_color",
-				"description" 	=> 	__( 'Choose testimonial background color here', 'counter-vc' ),
+				"description" 	=> 	__( 'Choose testimonial background color here', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Colors',
 				),
 
 				array(
 				"type" 			=> 	"colorpicker",
-				"heading" 		=> 	__( 'Title Color', 'counter-vc' ),
+				"heading" 		=> 	__( 'Title Color', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"title_color",
-				"description" 	=> 	__( 'Choose testimonial title color here', 'counter-vc' ),
+				"description" 	=> 	__( 'Choose testimonial title color here', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Colors',
 				),
 
 				array(
 				"type" 			=> 	"colorpicker",
-				"heading" 		=> 	__( 'Company Name Color', 'counter-vc' ),
+				"heading" 		=> 	__( 'Company Name Color', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"company_color",
-				"description" 	=> 	__( 'Choose testimonial company name color here', 'counter-vc' ),
+				"description" 	=> 	__( 'Choose testimonial company name color here', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Colors',
 				),
 
 				array(
 				"type" 			=> 	"colorpicker",
-				"heading" 		=> 	__( 'Slider Arrows', 'counter-vc' ),
+				"heading" 		=> 	__( 'Slider Arrows', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"param_name" 	=> 	"arrows_color",
-				"description" 	=> 	__( 'Choose testimonial slider arrows color here', 'counter-vc' ),
+				"description" 	=> 	__( 'Choose testimonial slider arrows color here', 'stars-testimonials-with-slider-and-masonry-grid' ),
 				"group" 		=> 	'Colors',
 				),
 			)

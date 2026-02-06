@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class Stars_testimonials_upgrade_box {
     public $plugin_name = "Stars Testimonials";
     public $plugin_slug = "starsTestimonials";
@@ -9,15 +10,15 @@ class Stars_testimonials_upgrade_box {
     }
 
     public function stars_testtimonials_upgradetopro() {
-        $nonce = filter_input(INPUT_POST, 'nonce', FILTER_SANITIZE_STRING);
-        $days = filter_input(INPUT_POST, 'days', FILTER_SANITIZE_STRING);
-        if(!empty($nonce) && wp_verify_nonce($nonce, $this->plugin_slug."_upgrade_box")) {
-            if($days == -1) {
-                add_option($this->plugin_slug."_hide_upgrade_box", "1");
-            } else {
-                $date = date("Y-m-d", strtotime("+".$days." days"));
-                update_option($this->plugin_slug."_show_upgrade_box_after", $date);
-            }
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), $this->plugin_slug."_upgrade_box" ) ) {
+            wp_send_json_error();
+        }
+        $days = filter_input(INPUT_POST, 'days', FILTER_SANITIZE_NUMBER_INT);
+        if($days == -1) {
+            add_option($this->plugin_slug."_hide_upgrade_box", "1");
+        } else {
+            $date = date("Y-m-d", strtotime("+".$days." days"));
+            update_option($this->plugin_slug."_show_upgrade_box_after", $date);
         }
         die;
     }
@@ -215,9 +216,16 @@ class Stars_testimonials_upgrade_box {
         <div class="notice notice-info premio-notice <?php echo esc_attr($this->plugin_slug) ?>-premio-upgrade-box <?php echo  esc_attr($this->plugin_slug) ?>-premio-upgrade-box">
             <div class="upgrade-box-default" id="default-upgrade-box-<?php echo esc_attr($this->plugin_slug) ?>">
                 <p>
-                    <?php printf(esc_html__("Upgrade to %s for more more awesome features", 'mystickysidebar'), "<b>".$this->plugin_name." Pro</b>") ?>
+                    <?php
+                    $upgrade_msg = sprintf(
+                        // translators: %s is replaced by the plugin name and 'Pro'.
+                        __( 'Upgrade to %s for more more awesome features', 'stars-testimonials-with-slider-and-masonry-grid' ),
+                        '<b>'.esc_html( $this->plugin_name ).' Pro</b>'
+                    );
+                    echo wp_kses_post( $upgrade_msg );
+                    ?>
 					<span class="<?php echo esc_attr($this->plugin_slug) ?>-tab-integration-action">
-						<a class="upgradenow-box-btn" data-days="-1" href="<?php echo esc_url(admin_url("edit.php?post_type=stars_testimonial&page=all-shortcodes&task=upgrade-to-pro")); ?>" target="_blank" ><?php esc_html_e("Upgrade now", 'mystickysidebar'); ?></a>
+                        <a class="upgradenow-box-btn" data-days="-1" href="<?php echo esc_url( admin_url('edit.php?post_type=stars_testimonial&page=all-shortcodes&task=upgrade-to-pro') ); ?>" target="_blank" ><?php esc_html_e('Upgrade now', 'stars-testimonials-with-slider-and-masonry-grid'); ?></a>
 					</span>					
                     <a href="javascript:;" class="dismiss-btn <?php echo esc_attr($this->plugin_slug) ?>-premio-upgrade-dismiss-btn"><span class="dashicons dashicons-no-alt"></span></a>
                 </p>
@@ -227,11 +235,11 @@ class Stars_testimonials_upgrade_box {
         <div class="<?php echo esc_attr($this->plugin_slug) ?>-upgrade-box-popup">
             <div class="<?php echo esc_attr($this->plugin_slug) ?>-upgrade-box-popup-content">
                 <button class="<?php echo esc_attr($this->plugin_slug) ?>-close-upgrade-box-popup"><span class="dashicons dashicons-no-alt"></span></button>
-                <div class="<?php echo esc_attr($this->plugin_slug) ?>-upgrade-box-title"> <?php esc_html_e("Would you like us to remind you about this later? ",'mystickysidebar')?></div>
+                <div class="<?php echo esc_attr($this->plugin_slug) ?>-upgrade-box-title"> <?php esc_html_e('Would you like us to remind you about this later?', 'stars-testimonials-with-slider-and-masonry-grid')?></div>
                 <div class="<?php echo esc_attr($this->plugin_slug) ?>-upgrade-box-options">
-                    <a href="javascript:;" data-days="7"> <?php esc_html_e("Remind me in 7 days ",'mystickysidebar')?></a>
-                    <a href="javascript:;" data-days="30"> <?php esc_html_e("Remind me in 30 days",'mystickysidebar')?></a>
-                    <a href="javascript:;" data-days="-1" class="dismiss"> <?php esc_html_e("Don't remind me about this ",'mystickysidebar')?></a>
+                    <a href="javascript:;" data-days="7"> <?php esc_html_e('Remind me in 7 days', 'stars-testimonials-with-slider-and-masonry-grid')?></a>
+                    <a href="javascript:;" data-days="30"> <?php esc_html_e('Remind me in 30 days', 'stars-testimonials-with-slider-and-masonry-grid')?></a>
+                    <a href="javascript:;" data-days="-1" class="dismiss"> <?php esc_html_e("Don't remind me about this", 'stars-testimonials-with-slider-and-masonry-grid')?></a>
                 </div>
             </div>
         </div>
@@ -249,7 +257,7 @@ class Stars_testimonials_upgrade_box {
                     jQuery("body").removeClass("has-premio-box");
                     
 					jQuery.ajax({
-                        url: "<?php echo admin_url("admin-ajax.php") ?>",
+                        url: "<?php echo esc_url(admin_url("admin-ajax.php")); ?>",
                         data: "action=<?php echo esc_attr($this->plugin_slug) ?>_upgrade_box&days="+dataDays+"&nonce=<?php echo esc_attr(wp_create_nonce($this->plugin_slug."_upgrade_box")) ?>",
                         type: "post",
                         success: function() {
@@ -271,7 +279,7 @@ class Stars_testimonials_upgrade_box {
                     jQuery(".<?php echo esc_attr($this->plugin_slug) ?>-premio-upgrade-box").remove();
                     jQuery("body").removeClass("has-premio-box");
                     jQuery.ajax({
-                        url: "<?php echo admin_url("admin-ajax.php") ?>",
+                        url: "<?php echo esc_url(admin_url("admin-ajax.php")); ?>",
                         data: "action=<?php echo esc_attr($this->plugin_slug) ?>_upgrade_hide_box&days="+dataDays+"&nonce=<?php echo esc_attr(wp_create_nonce($this->plugin_slug."_upgrade_box")) ?>",
                         type: "post",
                         success: function() {

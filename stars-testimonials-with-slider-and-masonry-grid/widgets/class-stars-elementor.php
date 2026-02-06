@@ -63,7 +63,7 @@ class StarsTestimonoalsAddon extends Widget_Base {
      * @return string Widget title.
      */
     public function get_title() {
-        return __( 'Stars Testimonials', 'elementor-awesomesauce' );
+        return __( 'Stars Testimonials', 'stars-testimonials-with-slider-and-masonry-grid' );
     }
 
     /**
@@ -117,23 +117,24 @@ class StarsTestimonoalsAddon extends Widget_Base {
         $this->start_controls_section(
             'section_content',
             array(
-                'label' => __( 'Content', 'elementor-awesomesauce' ),
+                'label' => __( 'Content', 'stars-testimonials-with-slider-and-masonry-grid' ),
             )
         );
         global $wpdb;
         $tableName = $wpdb->prefix . DB_TESTIMONIAL_TABLE_NAME;
         $query = "SELECT id, shortcode_name
             FROM {$tableName} ORDER BY id DESC";
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results($query);
         $options = array();
-        $options[0] = esc_html__("Select Shortcode");
+        $options[0] = esc_html__("Select Shortcode", 'stars-testimonials-with-slider-and-masonry-grid');
         foreach ($results as $row) {
             $options[$row->id] = $row->shortcode_name;
         }
         $this->add_control(
             'shortcode_id',
             array(
-                'label'   => __( 'Select Shortcode', 'elementor-awesomesauce' ),
+                'label'   => __( 'Select Shortcode', 'stars-testimonials-with-slider-and-masonry-grid' ),
                 'type'    => Controls_Manager::SELECT,
                 'default' => '',
                 'dynamic' => [

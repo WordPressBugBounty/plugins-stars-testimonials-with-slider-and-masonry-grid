@@ -4,7 +4,8 @@
     <div class="blockquote st-testimonial-content">
       <p><?php the_content(); ?>
     </div>
-    <div class="starrating st-rating" title="Rated <?php echo $stars; ?> out of 5.0">
+    <?php // translators: %s is replaced by the rating value. ?>
+    <div class="starrating st-rating" title="<?php echo esc_attr( sprintf( esc_html__( 'Rated %s out of 5.0', 'stars-testimonials-with-slider-and-masonry-grid' ), $stars ) ); ?>">
     	<?php do_action( 'stars_testimonial_display_rating', $stars ); ?>
     </div>      
     <h3 class="st-testimonial-title"><?php the_title(); ?></h3>
