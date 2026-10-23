@@ -1,8 +1,8 @@
 === Stars Testimonials — Responsive Reviews & Star Ratings ===
 Contributors: galdub, tomeraharon, premio
 Tags: testimonials, reviews, customers reviews, collect reviews, collect testimonials
-Requires at least: 3.5
-Tested up to: 6.9
+Requires at least: 4.7
+Tested up to: 7.1
 Stable tag: 3.3.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
